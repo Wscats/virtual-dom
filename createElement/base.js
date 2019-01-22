@@ -62,7 +62,9 @@ function createTextElement(value) {
         nodeValue: value
     });
 }
-
+console.log("1.自定义标签，组件")
 console.log(jsxObj1)
+console.log("2.自带标签")
 console.log(jsxObj2)
+console.log("3.组件和自带标签混合使用")
 console.log(jsxObj3)
