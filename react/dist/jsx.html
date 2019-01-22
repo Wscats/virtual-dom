@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>JSX</title>
+</head>
+
+<body>
+    <script>
+        function createElement(type, props, ...childrens) {
+            return {
+                type: type,
+                props: {
+                    ...props,
+                },
+                children: childrens.length <= 1 ? childrens[0] : childrens
+            };
+        }
+        // let jsxObj = createElement("ul", {
+        //     id: "list"
+        // }, createElement("li", {
+        //     class: "item"
+        // }, "Item 1"), createElement("li", {
+        //     class: "item"
+        // }, "Item 2"), createElement("li", {
+        //     class: "item"
+        // }, "Item 3"))
+        let jsxObj = createElement("div", null, createElement("img", {
+            src: "avatar.png",
+            className: "profile"
+        }), createElement("h3", null, "你好"));
+        console.log(jsxObj)
+
+        // let jsxObj = createElement(
+        //     'div',
+        //     null,
+        //     createElement(
+        //         'h1', {
+        //             style: {
+        //                 fontSize: '20px'
+        //             },
+        //             className: 'box'
+        //         },
+        //         'hello'
+        //     ),
+        //     createElement(
+        //         'ul',
+        //         null,
+        //         createElement(
+        //             'li',
+        //             null,
+        //             'AA'
+        //         ),
+        //         createElement('li', null)
+        //     )
+        // );
+
+        //=>DOM的动态创建
+        function render(jsxObj, container, callback) {
+            let {
+                type,
+                props,
+                children
+            } = jsxObj;
+            let newElement = document.createElement(type);
+            //=>属性和子元素的处理
+            for (let attr in props) {
+                if (!props.hasOwnProperty(attr)) break;
+                switch (attr) {
+                    case 'className':
+                        newElement.setAttribute('class', props[attr]);
+                        break;
+                    case 'style':
+                        let styleOBJ = props['style'];
+                        for (let key in styleOBJ) {
+                            if (styleOBJ.hasOwnProperty(key)) {
+                                newElement['style'][key] = styleOBJ[key];
+                            }
+                        }
+                        break;
+                        //=>CHILDREN
+                    case 'children':
+                        // renderChildren()
+                    default:
+                        newElement.setAttribute(attr, props[attr]);
+                }
+            }
+            renderChildren();
+
+            function renderChildren() {
+                let childrenAry = children;
+                childrenAry = childrenAry instanceof Array ? childrenAry : (childrenAry ? [childrenAry] : []);
+                childrenAry.forEach(item => {
+                    if (typeof item === 'string') {
+                        //=>字符串:文本节点，直接增加到元素中
+                        newElement.appendChild(document.createTextNode(item));
+                    } else {
+                        console.log(item)
+                        //=>字符串:新的JSX元素，递归调用RENDER，只不过此时的容器是当前新创建的newElement
+                        render(item, newElement);
+                    }
+                });
+            }
+            container.appendChild(newElement);
+            callback && callback();
+        }
+        
+        render(jsxObj, window.document.body, () => {
+            console.log('哈哈');
+        });
+    </script>
+</body>
+
+</html>
