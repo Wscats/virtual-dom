@@ -4,7 +4,7 @@
 ```js
 createElement(App, null)
 ```
-生成的格式为，注意`props`和`children`在这里一般为空
+生成的格式为，注意`props`和`children`在这里一般为空，`type`的内容为继承`Component`类的`App`类组件
 ```js
 {
     type: class App, 
