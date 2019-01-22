@@ -14,6 +14,7 @@ let instance = instantiate(element)
 ```
 `instantiate()`方法里面有两个主要的分支`isClassElement`和`isDomElement`，而`isDomElement`里面也会有两个分支
 
+
 - isDomElement (typeof type === 'string')
     - isDomElement (type !== 'TEXT_ELEMENT')
     - isTextElement (type === 'TEXT_ELEMENT')
@@ -38,4 +39,10 @@ updateDomProperties(dom, [], element.props);
 ```js
 const children = props.children || [];
 const childInstances = children.map(instantiate);
+```
+
+`isClassElement`分支中的`createPublicInstance`负责实例化组件，并继承类似于`<App name='wscats' />`组件的`name`属性值，实例化执行组件的`render()`方法返回`JSX`对象
+```js
+const publicInstance = createPublicInstance(element, instance);
+const childElement = publicInstance.render();
 ```

@@ -37,7 +37,7 @@ function instantiate(element) {
             childInstances
         };
         return instance;
-    } 
+    }
     // 自定义标签(组件)的分支
     else if (isClassElement) {
         const instance = {};
@@ -65,26 +65,39 @@ function instantiate(element) {
     }
 }
 
+// 这里主要是实例化组件，并且继承props值
 function createPublicInstance(element, instance) {
+    // 自定义标签(组件)是没有children的
     const {
         type,
         props
     } = element;
-    // 把组件实例化
+    console.log(element)
+    // 把组件实例化 new App(props)
+    // 并把所有的props传进组件实例
     const publicInstance = new type(props);
+    // 新增一个属性值__internalInstance存放instance
     publicInstance.__internalInstance = instance;
     return publicInstance;
 }
 
-class Component {}
+class Component {
+    constructor(props) {
+        this.props = props;
+        this.state = this.state || {};
+    }
+}
 // 为后面instantiate提供组件判断的依据
 Component.prototype.isReactComponent = {};
 // 自定义组件
 class App extends Component {
     constructor(e) {
-        super(e), this.props = {
-            name: "laoxie"
-        }, this.state = {
+        super(e)
+        // 如果不写props的话就会继承属性值上的props的值
+        // 可以在props上面定义新的属性值，或者更改继承而来的属性值
+        // 这里也会继承children属性值，不过这个值一般情况下为空数组
+        this.props.age = 19
+        this.state = {
             name: "laoyao",
             age: 18
         }
@@ -117,6 +130,7 @@ class App extends Component {
 let element = {
     type: App,
     props: {
+        name: 'appCp',
         children: []
     }
 }
