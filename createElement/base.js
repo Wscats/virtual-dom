@@ -22,17 +22,25 @@ class App extends Component {
     }
 }
 // 1.自定义标签，组件
-// let jsxObj = createElement(App, null)
+let jsxObj1 = createElement(App, null)
 
 // 2.自带标签
 this.like = () => {
     console.log(1)
 }
-let jsxObj = createElement("div", {
+let jsxObj2 = createElement("div", {
     onClick: this.like
 }, ["hello world", createElement("div", {
     onClick: this.like
 }, "hello world")])
+
+// 3.组件和自带标签混合使用
+this.like = () => {
+    console.log(1)
+}
+let jsxObj3 = createElement("div", {
+    onClick: this.like
+}, [createElement(App, null)])
 
 function createElement(type, props, ...children) {
     props = Object.assign({}, props);
@@ -55,4 +63,6 @@ function createTextElement(value) {
     });
 }
 
-console.log(jsxObj)
+console.log(jsxObj1)
+console.log(jsxObj2)
+console.log(jsxObj3)

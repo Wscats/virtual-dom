@@ -20,11 +20,11 @@ createElement(App, null)
 this.like = () => {
     console.log(1)
 }
-let jsxObj = createElement(createElement("div", {
+createElement("div", {
     onClick: this.like
 }, ["hello world", createElement("div", {
     onClick: this.like
-}, "hello world")]), null)
+}, "hello world")])
 ```
 注意如果是渲染文本节点的话，类型都是`type: TEXT_ELEMENT`,并且附带`nodeValue: 文本值`
 ```js
@@ -61,4 +61,30 @@ let jsxObj = createElement(createElement("div", {
     }
 }
 ```
-3.
+3. `createElement`在组件和自带标签中混合使用
+
+```js
+this.like = () => {
+    console.log(1)
+}
+createElement("div", {
+    onClick: this.like
+}, [createElement(App, null)])
+```
+
+```js
+{
+    type: div, 
+    props: {
+        onClick: ƒ, 
+        children: [
+            {
+                type: class App, 
+                props: {
+                    children: []
+                }
+            }
+        ]
+    }
+}
+```
