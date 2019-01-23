@@ -29,7 +29,7 @@ function updateDomProperties(dom, prevProps, nextProps) {
     });
     
 }
-
+// 模拟dom
 let dom = document.createElement('img');
 let element = {
     props: {
