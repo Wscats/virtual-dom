@@ -25,8 +25,10 @@ function instantiate(element) {
         // 遍历到最底层的时候再沿路往上返回 return {element,dom,childInstances} 对象回到div
         const childInstances = children.map(instantiate);
         console.log(childInstances)
+        // 遍历childInstances下所有的dom属性
         const childDoms = childInstances.map(childInstance => childInstance.dom);
         console.log(childDoms)
+        // 拼接到根元素节点上
         childDoms.forEach(childDom => dom.appendChild(childDom));
         const instance = {
             // 每个子节点对象
@@ -41,15 +43,21 @@ function instantiate(element) {
     // 自定义标签(组件)的分支
     else if (isClassElement) {
         const instance = {};
+        // 实例化组件类
         const publicInstance = createPublicInstance(element, instance);
         console.log(publicInstance)
+        // 获取组件的JSX对象
         const childElement = publicInstance.render();
+        // 转化JSX对象为虚拟DOM
         const childInstance = instantiate(childElement);
         console.log(childElement)
         Object.assign(instance, {
+            // 组件的结构本质就是解析子节点标签的元素节点
             dom: childInstance.dom,
             element,
+            // 组件只有一个根节点，所以这里的childInstance不是数组，只是一个对象
             childInstance,
+            // 这个属性组件独有的
             publicInstance
         });
         return instance;
@@ -136,4 +144,5 @@ let element = {
 }
 
 let instance = instantiate(element)
+console.log("以下是输出的instance，遍历完整个由组件和自定义标签组成生成具有DOM信息的虚拟DOM树")
 console.log(instance)

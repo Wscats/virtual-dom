@@ -14,7 +14,6 @@ let instance = instantiate(element)
 ```
 `instantiate()`方法里面有两个主要的分支`isClassElement`和`isDomElement`，而`isDomElement`里面也会有两个分支
 
-
 - isDomElement (typeof type === 'string')
     - isDomElement (type !== 'TEXT_ELEMENT')
     - isTextElement (type === 'TEXT_ELEMENT')
@@ -46,3 +45,84 @@ const childInstances = children.map(instantiate);
 const publicInstance = createPublicInstance(element, instance);
 const childElement = publicInstance.render();
 ```
+
+只有组件类有`publicInstance`属性值，里面存放着组件实例化后的类，这里面的`childInstances`是对应前面虚拟DOM对象中的`children`，而里面的`dom`是已经生成了还没挂载的虚拟DOM
+
+注意下面结构中组件的`childInstances`就是一个对象，而非数组
+
+而`element`就是保存每个节点对应的虚拟DOM对象,也就是`createElement()`生成的对象
+
+- 1. 组件实例化前的对象树
+```js
+{
+    type: App,
+    props: {
+        name: 'appCp',
+        children: []
+    }
+}
+```
+- 2. 组件实例化后的对象树 (进入`isClassElement`分支，经过`createPublicInstance()`和`publicInstance.render()`后)
+```js
+{
+    type: 'div',
+    props: {
+        children: [{
+            type: "p",
+            props: {
+                children: [{
+                    type: "TEXT_ELEMENT",
+                    props: {
+                        nodeValue: "hello world",
+                        children: []
+                    }
+                }]
+            }
+        }]
+    }
+}
+```
+- 3. 组件实例化后并且经过解析后存着真实而未挂载的DOM对象树 (进入`isClassElement`分支，经过`createPublicInstance()`和`publicInstance.render()`后，并经过`instantiate()`后)
+```js
+{
+    element: {
+        props: {name: "appCp", children: Array(0), age: 19},
+        type: class App
+    }, 
+    dom: div, 
+    childInstance: {
+        element: {
+            props: {children: Array(1)},
+            type: "div"
+        }, 
+        dom: div, 
+        childInstances: [{
+            element: {
+                props: {children: Array(1)},
+                type: "p"
+            }, 
+            dom: p, 
+            childInstances: [{
+                element: {
+                    props: {nodeValue: "hello world", children: Array(0)}
+                    type: "TEXT_ELEMENT"
+                }, 
+                dom: text, 
+                childInstances: Array(0)
+            }]
+        }]
+    }, 
+    publicInstance: (new App) -> {
+        props: {name: "appCp", children: Array(0), age: 19},
+        state: {name: "laoyao", age: 18},
+        __internalInstance: {dom: div, element: {…}, childInstance: {…}, publicInstance: App}
+        __proto__: Component -> {
+            constructor: class App
+            like: ƒ like()
+            render: ƒ render()
+        }
+    }
+}
+```
+最后将生成的虚拟DOM对象树赋值给`childInstance`，并取出`childInstance.dom`的`dom`节点，`dom`里面存着整个组件渲染而成的所有未挂载节点，并组装成一个新的`instance`对象暴露出去
+
