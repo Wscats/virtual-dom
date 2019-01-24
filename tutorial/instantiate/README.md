@@ -46,7 +46,7 @@ const publicInstance = createPublicInstance(element, instance);
 const childElement = publicInstance.render();
 ```
 
-只有组件类有`publicInstance`属性值，里面存放着组件实例化后的类，这里面的`childInstances`是对应前面虚拟DOM对象中的`children`，而里面的`dom`是已经生成了还没挂载的虚拟DOM
+只有组件类有`publicInstance`属性值，里面存放着组件实例化后的类，这里面存放着该组件一些关键的信息，比如`state`，`props`还有组件内部定义的方法和该组件生命周期，而这里面的`childInstances`是对应前面虚拟DOM对象中的`children`，而里面的`dom`是已经生成了还没挂载的虚拟DOM
 
 注意下面结构中组件的`childInstances`就是一个对象，而非数组
 
