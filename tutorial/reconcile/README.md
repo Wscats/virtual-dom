@@ -25,7 +25,12 @@ reconcile(document.querySelector("#root"), null, <App />);
 
 # setState
 
-
+在`setState()`里面我们也可以触发`reconcile()`函数，里面有三个参数
+```js
+reconcile(parentDom, this.__internalInstance, element);
+// 既document.querySelector("#root") = parentDom，instance = null，element = <App />
+reconcile(parentDom, this.__internalInstance, element);
+```
 
 # reconcile
 

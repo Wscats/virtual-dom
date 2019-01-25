@@ -43,10 +43,11 @@ const childInstances = children.map(instantiate);
 `isClassElement`分支中的`createPublicInstance`负责实例化组件，并继承类似于`<App name='wscats' />`组件的`name`属性值，实例化执行组件的`render()`方法返回`JSX`对象
 ```js
 const publicInstance = createPublicInstance(element, instance);
+publicInstance.__internalInstance = instance;
 const childElement = publicInstance.render();
 ```
 
-只有组件类有`publicInstance`属性值，里面存放着组件实例化后的类，这里面存放着该组件一些关键的信息，比如`state`，`props`还有组件内部定义的方法和该组件生命周期，而这里面的`childInstances`是对应前面虚拟DOM对象中的`children`，而里面的`dom`是已经生成了还没挂载的虚拟DOM
+只有组件类有`publicInstance`属性值，里面存放着组件实例化后的类，这里面存放着该组件一些关键的信息，比如`state`，`props`还有组件内部定义的方法和该组件生命周期，而这里面的`childInstances`是对应前面虚拟DOM对象中的`children`，而里面的`dom`是已经生成了还没挂载的虚拟DOM，这里还挂载了一个`__internalInstance`，它方便我们获取`dom`和`element`等关键信息，方便我们在后面`setState()`中触发`reconcile()`更新虚拟DOM
 
 注意下面结构中组件的`childInstances`就是一个对象，而非数组
 

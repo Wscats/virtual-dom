@@ -85,6 +85,7 @@ function createPublicInstance(element, instance) {
     // 并把所有的props传进组件实例
     const publicInstance = new type(props);
     // 新增一个属性值__internalInstance存放instance
+    // 方便我们在后面的setState触发reconcile的时候可以直接获取props和state的值进行DOM更新
     publicInstance.__internalInstance = instance;
     return publicInstance;
 }

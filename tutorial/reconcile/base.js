@@ -80,6 +80,12 @@ class Component {
     }
 }
 class App extends Component {
+    constructor(props){
+        super(props)
+        this.state = {
+            num: 0.5201314
+        }
+    }
     like() {
         console.log(1)
     }
@@ -89,22 +95,24 @@ class App extends Component {
     }
     componentWillMount() {
         console.log('componentWillMount')
-        setInterval(()=>{
+        setTimeout(()=>{
             this.setState({
-                
+                num: Math.random()
             })
         },1000)
     }
 }
-
 // 模拟的DOM
 let dom = document.createElement('div');
 dom.innerHTML = 'hello wolrd';
+// 模拟__internalInstance
+let publicInstance = new App
+
 // 这个是伪instantiate，输出是一个固定的未挂载虚拟DOM结构
 let obj = {
     childInstance: {
         element: {},
-        dom: 'div',
+        dom,
         childInstances: []
     },
     dom,
@@ -118,14 +126,12 @@ let obj = {
         }
     },
     // 实例化后
-    publicInstance: new App,
+    publicInstance
 }
 
+publicInstance.__internalInstance = obj
 function instantiate(element) {
-    return {
-        ...obj,
-        __internalInstance: obj
-    }
+    return obj
 }
 // 由于已经模拟了instantiate方法的返回值，所以这里第一个参数就不传组件了，传了null进行模拟
 render(null, document.querySelector("#root"))
