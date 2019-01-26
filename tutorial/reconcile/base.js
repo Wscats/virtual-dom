@@ -27,7 +27,10 @@ function reconcile(parentDom, instance, element) {
         parentDom.replaceChild(newInstance.dom, instance.dom);
         return newInstance;
     } else if (typeof element.type === 'string') {
-        updateDomProperties(instance.dom, instance.element.props, element.props);
+        // 更新属性值
+        // instance.element.props是旧的props
+        // element.props是新的props
+        // updateDomProperties(instance.dom, instance.element.props, element.props);
         instance.childInstances = reconcileChildren(instance, element);
         instance.element = element;
         return instance;
@@ -42,8 +45,11 @@ function reconcile(parentDom, instance, element) {
         instance.publicInstance &&
             instance.publicInstance.componentWillUpdate &&
             instance.publicInstance.componentWillUpdate();
+        // 更新props
         instance.publicInstance.props = element.props;
+        // 只有组件才会触发componentWillUpdate生命周期，触发render方法，重新获取组件JSX对象
         const newChildElement = instance.publicInstance.render();
+        // 获取组件旧JSX生成的未挂载虚拟DOM对象信息，存放在childInstance里面
         const oldChildInstance = instance.childInstance;
         const newChildInstance = reconcile(parentDom, oldChildInstance, newChildElement);
         // componentDidUpdate
@@ -56,6 +62,22 @@ function reconcile(parentDom, instance, element) {
         return instance;
     }
 }
+
+function reconcileChildren(instance, element) {
+    const {
+        dom,
+        childInstances
+    } = instance;
+    const newChildElements = element.props.children || [];
+    // max() 方法可返回两个指定的数中带有较大的值的那个数
+    // 对比两个虚拟DOM的深度，取最深的进行遍历
+    const count = Math.max(childInstances.length, newChildElements.length);
+    const newChildInstances = [];
+    for (let i = 0; i < count; i++) {
+        newChildInstances[i] = reconcile(dom, childInstances[i], newChildElements[i]);
+    }
+    return newChildInstances.filter(instance => instance !== null);
+}
 let rootInstance = null;
 
 function render(element, parentDom) {
@@ -67,7 +89,8 @@ function render(element, parentDom) {
 
 // 测试代码
 class Component {
-    constructor() {
+    constructor(props) {
+        this.props = props;
         this.state = this.state || {};
     }
     setState(partialState) {
@@ -79,8 +102,27 @@ class Component {
         reconcile(parentDom, this.__internalInstance, element);
     }
 }
+
+let element = {
+    type: 'div',
+    props: {
+        children: [{
+            type: "p",
+            props: {
+                children: [{
+                    type: "TEXT_ELEMENT",
+                    props: {
+                        nodeValue: "hello wscats",
+                        children: []
+                    }
+                }]
+            }
+        }]
+    }
+}
+
 class App extends Component {
-    constructor(props){
+    constructor(props) {
         super(props)
         this.state = {
             num: 0.5201314
@@ -91,15 +133,18 @@ class App extends Component {
     }
     // 这句render在这里暂不起任何作用
     render() {
-        return {}
+        return element
     }
     componentWillMount() {
         console.log('componentWillMount')
-        setTimeout(()=>{
+        setTimeout(() => {
             this.setState({
                 num: Math.random()
             })
-        },1000)
+        }, 1000)
+    }
+    componentWillUpdate() {
+        console.log('componentWillUpdate')
     }
 }
 // 模拟的DOM
@@ -111,9 +156,19 @@ let publicInstance = new App
 // 这个是伪instantiate，输出是一个固定的未挂载虚拟DOM结构
 let obj = {
     childInstance: {
-        element: {},
+        element,
         dom,
-        childInstances: []
+        childInstances: [{
+            element: {
+                props: {
+                    nodeValue: "hello wscats",
+                    children: []
+                },
+                type: "TEXT_ELEMENT"
+            },
+            dom,
+            childInstances: []
+        }]
     },
     dom,
     element: {
@@ -130,6 +185,7 @@ let obj = {
 }
 
 publicInstance.__internalInstance = obj
+
 function instantiate(element) {
     return obj
 }

@@ -19,7 +19,7 @@ reconcile(parentDom, prevInstance, element)
 // ->函数将上面三个值赋值给形参parentDom, instance, element
 reconcile(parentDom, instance, element)
 // ->
-// 既document.querySelector("#root") = parentDom，instance = null，element = <App />
+// 既parentDom = document.querySelector("#root")，instance = null，element = <App />
 reconcile(document.querySelector("#root"), null, <App />);
 ```
 
@@ -33,6 +33,8 @@ reconcile(parentDom, this.__internalInstance, element);
 ```
 
 # reconcile
+
+> reconcile(节点，由JSX生成包含未挂载DOM信息的对象(旧)，JSX对象(新))
 
 `render`触发渲染第一帧之后，由于`instance === null`，所以我们进入`reconcile()`逻辑里面的第一个分支
 ```js

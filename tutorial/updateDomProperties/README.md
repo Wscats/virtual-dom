@@ -22,7 +22,7 @@ updateDomProperties(dom, [], element.props);
 dom.removeEventListener(eventType, prevProps[name]);
 dom[name] = null;
 ```
-如果有上一个节点帧
+如果有上一个节点帧，先移除旧的事件绑定和属性值再绑定新的属性值和事件
 ```js
 updateDomProperties(instance.dom, instance.element.props, element.props);
 ```
