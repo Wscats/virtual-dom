@@ -26,3 +26,8 @@ dom[name] = null;
 ```js
 updateDomProperties(instance.dom, instance.element.props, element.props);
 ```
+`updateDomProperties`更新两种类型的属性值
+|标签节点|文本节点|
+|-|-|
+|`document.createElement(type)`生成的节点|`createTextNode('')`生成的节点|
+|更新属性值|更新文本值|

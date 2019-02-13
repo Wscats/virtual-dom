@@ -1,3 +1,6 @@
+let {
+    updateDomProperties
+} = require('./updateDomProperties.js');
 function instantiate(element) {
     const {
         type,
@@ -17,7 +20,7 @@ function instantiate(element) {
         const dom = isTextElement ? document.createTextNode('') : document.createElement(type);
         console.log(dom)
         // 设置dom的事件、数据属性
-        // updateDomProperties(dom, [], element.props);
+        updateDomProperties(dom, [], element.props);
         // 如果有子元素赋值给children，否则赋值空数组
         const children = props.children || [];
         // 遍历children所有的子元素并进行处理

@@ -1,6 +1,10 @@
+let {
+    updateDomProperties
+} = require('./updateDomProperties.js');
 function reconcile(parentDom, instance, element) {
     if (instance === null) {
         const newInstance = instantiate(element);
+        console.log('newInstance',newInstance)
         // componentWillMount
         newInstance.publicInstance &&
             newInstance.publicInstance.componentWillMount &&
@@ -30,7 +34,7 @@ function reconcile(parentDom, instance, element) {
         // 更新属性值
         // instance.element.props是旧的props
         // element.props是新的props
-        // updateDomProperties(instance.dom, instance.element.props, element.props);
+        updateDomProperties(instance.dom, instance.element.props, element.props);
         instance.childInstances = reconcileChildren(instance, element);
         instance.element = element;
         return instance;
@@ -109,7 +113,7 @@ class App extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            num: "123"
+            num: 0.1314
         }
     }
     like() {
@@ -117,11 +121,12 @@ class App extends Component {
     }
     // 这句render在这里暂不起任何作用
     render() {
-        return (createElement("div", null, this.state.num))
+        return (createElement("p", null, this.state.num))
     }
     componentWillMount() {
         console.log('componentWillMount')
         setTimeout(() => {
+            console.log('触发了setState')
             this.setState({
                 num: Math.random()
             })
@@ -141,4 +146,7 @@ let {
     instantiate
 } = require("./instantiate.js")
 
-render(createElement("div", null, [createElement(App, null)]), document.querySelector("#root"))
+// 这里如果直接放<App />组件在根组件的话才可以执行生命周期
+// 因为reconcile还没进行优化
+// <div><App /></div>如果是这种结构的话，App组件的生命周期不会触发
+render(createElement(App, null), document.querySelector("#root"))

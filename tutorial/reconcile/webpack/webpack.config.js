@@ -1,6 +1,7 @@
 const path = require('path');
 
 const config = {
+    mode: 'development',
     entry: './src/test.js',
     output: {
         path: path.resolve(__dirname, 'dist'),

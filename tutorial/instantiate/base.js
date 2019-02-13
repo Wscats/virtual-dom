@@ -149,4 +149,4 @@ let element = {
 
 let instance = instantiate(element)
 console.log("以下是输出的instance，遍历完整个由组件和自定义标签组成生成具有DOM信息的虚拟DOM树")
-console.log(instance)
+console.log(instance.dom)

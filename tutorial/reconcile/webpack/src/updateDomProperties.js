@@ -29,34 +29,7 @@ function updateDomProperties(dom, prevProps, nextProps) {
     });
     
 }
-// 模拟dom1
-// 第一种是绑定属性值，包括事件，样式等
-let dom = document.createElement('img');
-let element = {
-    props: {
-        onClick() {
-            console.log(1)
-        },
-        src: "https://avatars1.githubusercontent.com/u/17243165?s=460&v=4",
-        name: "wscats",
-        children: []
-    }
-}
-updateDomProperties(dom, [], element.props);
-console.log(dom);
-// 这里将生成的虚拟DOM挂载到真实节点上测试
-document.body.appendChild(dom);
 
-// 模拟dom2
-// 第二种是绑定文本节点，注意是createTextNode
-let dom2 = document.createTextNode('');
-let element2 = {
-    props: {
-        nodeValue: "hello world",
-        children: []
-    }
+module.exports = {
+    updateDomProperties
 }
-updateDomProperties(dom2, [], element2.props);
-console.log(dom2);
-// 这里将生成的虚拟DOM挂载到真实节点上测试
-document.body.appendChild(dom2);
