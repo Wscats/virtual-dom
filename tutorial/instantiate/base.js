@@ -56,8 +56,10 @@ function instantiate(element) {
             dom: childInstance.dom,
             element,
             // 组件只有一个根节点，所以这里的childInstance不是数组，只是一个对象
+            // childInstance在后面reconcile中保存的是组件未更新信息(旧的数据信息)
             childInstance,
             // 这个属性组件独有的
+            // publicInstance在后面reconcile中保存的是组件将更新信息
             publicInstance
         });
         return instance;

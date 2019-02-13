@@ -55,6 +55,7 @@ function reconcile(parentDom, instance, element) {
         const newChildElement = instance.publicInstance.render();
         // 获取组件旧JSX生成的未挂载虚拟DOM对象信息，存放在childInstance里面
         const oldChildInstance = instance.childInstance;
+        // 不断触发reconcile对比前后的对象，然后进行reconcile
         const newChildInstance = reconcile(parentDom, oldChildInstance, newChildElement);
         // componentDidUpdate
         instance.publicInstance &&
@@ -103,6 +104,9 @@ class Component {
         // update instance
         const parentDom = this.__internalInstance.dom.parentNode;
         const element = this.__internalInstance.element;
+        // this.__internalInstance保存着组件新旧的信息
+        // 新的组件信息存在instance.publicInstance里面
+        // 旧的组件信息存在instance.childInstance里面
         reconcile(parentDom, this.__internalInstance, element);
     }
 }
