@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 把HTMLElement改造成一个函数并在它的原型链上放入HTMLElement本身有的方法
+        // 重点就是把它改造成自定义的函数
+        // 而这个新的HTMLElement会根据所在this的指向不同，而new出一个新的对象
+        ! function () {
+            if (void 0 !== window.Reflect && void 0 !== window.customElements && !window.customElements.hasOwnProperty(
+                    'polyfillWrapFlushCallback')) {
+                var BuiltInHTMLElement = HTMLElement;
+                window.HTMLElement = function () {
+                    console.log(this)
+                    return Reflect.construct(BuiltInHTMLElement, [], this.constructor);
+                };
+                HTMLElement.prototype = BuiltInHTMLElement.prototype;
+                HTMLElement.prototype.constructor = HTMLElement;
+                Object.setPrototypeOf(HTMLElement, BuiltInHTMLElement);
+            }
+        }();
+        console.log(HTMLElement());
+    </script>
+</body>
+
+</html>

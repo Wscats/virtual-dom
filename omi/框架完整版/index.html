@@ -14,7 +14,8 @@
       WeElement,
       h,
       render,
-      define
+      define,
+      options
     } = Omi
     const likeButton = class extends WeElement {
       install() {
@@ -39,9 +40,10 @@
         )
       }
     }
-    console.log(likeButton)
-    console.log(define('like-button', likeButton))
-    render(h('like-button'), 'body')
+    console.log(options);
+    console.log(likeButton);
+    console.log(define('like-button', likeButton));
+    render(h('like-button'), 'body');
   </script>
 </body>
 

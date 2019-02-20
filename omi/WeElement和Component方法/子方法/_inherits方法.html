@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        ! function () {
+            if (void 0 !== window.Reflect && void 0 !== window.customElements && !window.customElements.hasOwnProperty(
+                    'polyfillWrapFlushCallback')) {
+                var BuiltInHTMLElement = HTMLElement;
+                window.HTMLElement = function () {
+                    console.log(this)
+                    return Reflect.construct(BuiltInHTMLElement, [], this.constructor);
+                };
+                HTMLElement.prototype = BuiltInHTMLElement.prototype;
+                HTMLElement.prototype.constructor = HTMLElement;
+                Object.setPrototypeOf(HTMLElement, BuiltInHTMLElement);
+            }
+        }();
+        function _inherits(subClass, superClass) {
+            if ("function" != typeof superClass && null !== superClass) throw new TypeError(
+                "Super expression must either be null or a function, not " + typeof superClass);
+            // superClass && superClass.prototype如果有superClass并且有prototype，则取superClass.prototype
+            // Object.create(null) 创建的对象是一个空对象
+            // 往subClass的原型链继承superClass原型链的方法，并更改原型的构造函数为subClass
+            subClass.prototype = Object.create(superClass && superClass.prototype, {
+                constructor: {
+                    value: subClass,
+                    enumerable: !1,
+                    writable: !0,
+                    configurable: !0
+                }
+            });
+            // 讲道理，上面那一步已经是成功继承了，没有这一步也可以
+            // setPrototypeOf会把对象的属性值继承到原型链上
+            if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ =
+                superClass;
+        }
+        function WeElement() {
+            // HTMLElement.call(this)
+        }
+        // 这里的顺序注意一下，先执行_inherits方法然后再prototype上面挂载方法，如果顺序不对的话，那么prototype上的方法将会被_inherits方法覆盖
+        _inherits(WeElement, HTMLElement);
+        WeElement.prototype.connectedCallback = () => {}
+        WeElement.prototype.disconnectedCallback = function () {}
+        WeElement.prototype.update = function () {}
+        WeElement.prototype.fire = function (name, data) {}
+        // console.log(HTMLElement.prototype);
+        console.log(HTMLElement);
+        console.log(WeElement);
+        console.log(new WeElement);
+    </script>
+</body>
+
+</html>

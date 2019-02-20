@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        let proto = {};
+        let obj = {
+            x: 10
+        };
+        Object.setPrototypeOf(obj, proto);
+
+        proto.y = 20;
+        proto.z = 40;
+
+        obj.x // 10
+        obj.y // 20
+        obj.z // 40
+        console.log("---setPrototypeOf会把对象的属性值继承到原型链上--")
+        console.log(obj);
+
+        // 该方法等同于下面的函数。
+        // function setPrototypeOf(obj, proto) {
+        //     obj.__proto__ = proto;
+        //     return obj;
+        // }
+    </script>
+</body>
+
+</html>
