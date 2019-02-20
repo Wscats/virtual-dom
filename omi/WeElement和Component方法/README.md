@@ -108,7 +108,7 @@ function WeElement() {
 
 # WeElement组件的产生过程
 
-[详见_inherits方法WeElement继承HTMLElement.html]()
+[详见_inherits方法WeElement继承HTMLElement.html](https://github.com/Wscats/virtual-dom/blob/master/omi/WeElement%E5%92%8CComponent%E6%96%B9%E6%B3%95/%E5%AD%90%E6%96%B9%E6%B3%95/_inherits%E6%96%B9%E6%B3%95WeElement%E7%BB%A7%E6%89%BFHTMLElement.html)
 
 |步骤|涉及的方法|
 |-|-|
