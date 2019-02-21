@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <like-button></like-button>
+    <hate-button></hate-button>
+    <script>
+        var BuiltInHTMLElement = HTMLElement;
+        window.HTMLElement = function () {
+            return Reflect.construct(BuiltInHTMLElement, [], this.constructor);
+        };
+        HTMLElement.prototype = BuiltInHTMLElement.prototype;
+        HTMLElement.prototype.constructor = HTMLElement;
+
+        function WeElement() {
+            var _this = HTMLElement.call(this)
+            _this.data = _this.constructor.data || {};
+            return _this
+        }
+        WeElement.prototype = Object.create(HTMLElement.prototype, {
+            constructor: {
+                value: WeElement,
+            }
+        });
+
+        WeElement.prototype.connectedCallback = function () {
+            this.watch = new Observer();
+            this.install();
+            this.proxyData()
+            this.proxyMethods()
+            const template = document.createElement('template');
+            template.innerHTML = this.template;
+            const templateContent = template.content;
+            const attachShadow = this.attachShadow({
+                mode: 'open' // 'open' 表示该shadow dom可以通过js 的函数进行访问
+            })
+
+            attachShadow.appendChild(
+                templateContent.cloneNode(true) // 操作shadow dom
+            );
+            // 编译模板,要在appendChild之后
+            this.compileTemplate(attachShadow);
+        }
+        WeElement.prototype.proxyData = function () {
+            Object.keys(this.data).forEach((key) => {
+                Object.defineProperty(this, key, {
+                    set(newValue) {
+                        console.log("值发生了更改", newValue)
+                        this.data[key] = newValue;
+                        this.watch.emit(key, null)
+                    },
+                    get() {
+                        console.log("我查看了该值")
+                        return this.data[key]
+                    }
+                })
+            })
+        }
+        WeElement.prototype.proxyMethods = function () {
+            Object.keys(this.methods).forEach((key) => {
+                this[key] = this.methods[key]
+            })
+        }
+        WeElement.prototype.compileTemplate = function (attachShadow) {
+            let nodes = attachShadow.childNodes;
+            for (let node of nodes) {
+                switch (node.nodeType) {
+                    case 1:
+                        if (node.hasAttribute('@click')) {
+                            let eventName = node.getAttribute('@click');
+                            node.addEventListener('click', (e) => {
+                                this[eventName]();
+                            })
+                        } else if (node.hasAttribute('v-m')) {
+                            let attrVal = node.getAttribute('v-m');
+                            // 第一次编译时候显示
+                            node.value = this[attrVal];
+                            // 更新的时候显示
+                            this.watch.on(attrVal, () => {
+                                node.value = this.data[attrVal]
+                            })
+                            // 触发输入的时候显示
+                            node.addEventListener("input", () => {
+                                console.log(node.value)
+                                this[attrVal] = node.value;
+                                return () => {
+                                    this[attrVal] = node.value
+                                }
+                            })
+                        }
+                    case 3:
+                        this.compileTemplateText(node, 'textContent')
+                }
+            }
+        }
+        WeElement.prototype.compileTemplateText = function (node, type) {
+            let self = this;
+            let reg = /\{\{((?:.|\r?\n)+?)\}\}/g;
+            let txt = node.textContent
+            if (reg.test(txt)) {
+                node.textContent = txt.replace(reg, (matched, value) => {
+                    this.watch.on(value, () => {
+                        node.textContent = self.data[value]
+                    })
+                    return this[value]
+                })
+            }
+        }
+        WeElement.prototype.disconnectedCallback = function () {}
+        WeElement.prototype.update = function () {
+            attachShadow.appendChild(
+                templateContent.cloneNode(true) // 操作shadow dom
+            );
+        }
+        WeElement.prototype.fire = function (name, data) {}
+        class Observer {
+            constructor() {
+                this.list = {}
+            }
+            on(key, fn) {
+                if (!this.list[key]) {
+                    this.list[key] = [];
+                }
+                this.list[key].push(fn);
+            }
+            emit(key, params) {
+                let fns = this.list[key];
+                if (!fns || fns.length === 0) {
+                    return false;
+                }
+                fns.forEach(fn => {
+                    fn(params);
+                });
+            }
+        }
+        class LikeButton extends WeElement {
+            install() {
+                this.data = {
+                    name: '测试',
+                    skill: 'ps'
+                }
+                this.template =
+                    `
+                        <style>
+                            button {
+                                color: red
+                            }
+                        </style>
+                        <input v-m="name" />
+                        <button @click="test">{{name}}</button>
+                    `
+                this.methods = {
+                    test() {
+                        console.log(this)
+                        this.name = '摇一摇'
+                        console.log({
+                            ...this
+                        })
+                    }
+                }
+            }
+        }
+        class HateButton extends WeElement {
+            install() {
+                this.data = {
+                    name: '测试',
+                    skill: 'ps'
+                }
+                this.template =
+                    `
+                        <style>
+                            button {
+                                color: red
+                            }
+                        </style>
+                        <input v-m="name" />
+                        <button @click="test">{{name}}</button>
+                    `
+                this.methods = {
+                    test() {
+                        console.log(this)
+                        this.name = '摇一摇'
+                        console.log({
+                            ...this
+                        })
+                    }
+                }
+            }
+        }
+        customElements.define('like-button', LikeButton);
+        customElements.define('hate-button', HateButton);
+    </script>
+</body>
+
+</html>

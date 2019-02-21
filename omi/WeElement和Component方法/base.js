@@ -30,6 +30,7 @@ function _possibleConstructorReturn(self, call) {
     }
 }();
 function nProps(props) {
+    // 如果没有props或者是数组的话，都返回空对象
     if (!props || isArray(props)) return {};
     var result = {};
     Object.keys(props).forEach(function(key) {
@@ -254,9 +255,10 @@ var WeElement = function (_HTMLElement) {
         // 判断实例的类型
         _classCallCheck(this, WeElement);
         // 由于_HTMLElement即HTMLElement是被自己再封装的函数
-        // 而this由于
+        // 用于校验this的方法
         var _this = _possibleConstructorReturn(this, _HTMLElement.call(this));
-        // 
+        console.log(_this);
+        // 此时_this指向like-button组件实例化的对象
         _this.props = Object.assign(nProps(_this.constructor.props), _this.constructor.defaultProps);
         _this.elementId = id++;
         _this.data = _this.constructor.data || {};
@@ -265,7 +267,8 @@ var WeElement = function (_HTMLElement) {
     // 继承HTMLElement，HTMLElement是customElements.define组件需要继承的对象
     // WeElement继承_HTMLElement的原生方法
     _inherits(WeElement, _HTMLElement);
-    // 下面都是往
+    // 下面是组件的生命周期
+    // 注意这里别用箭头函数，不然this的指向会出问题
     WeElement.prototype.connectedCallback = function () {
         if (!this.constructor.pure) {
             var p = this.parentNode;

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 判断是否数组
+        function isArray(obj) {
+            return '[object Array]' === Object.prototype.toString.call(obj);
+        }
+
+        function nProps(props) {
+            // 如果没有props或者是数组的话，都返回空对象
+            if (!props || isArray(props)) return {};
+            var result = {};
+            Object.keys(props).forEach(function (key) {
+                console.log(key)
+                result[key] = props[key].value;
+            });
+            return result;
+        }
+        // nProps接受的数据格式为下面这种
+        console.log(nProps({
+            name: {
+                value: 'lemon'
+            },
+            age: {
+                value: 18
+            },
+            skill: {
+                value: ['ps', 'css', 'js']
+            }
+        }))
+    </script>
+</body>
+
+</html>

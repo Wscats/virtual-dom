@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <like-button></like-button>
+    <script>
+        // 改写原生HTMLElement函数，让它变成一个新的函数
+        var BuiltInHTMLElement = HTMLElement;
+        window.HTMLElement = function () {
+            console.log(this.constructor)
+            // Reflect.construct(父类构造函数，父类的参数，子类构造函数) 实例化子类并继承父类
+            return Reflect.construct(BuiltInHTMLElement, [], this.constructor);
+        };
+        HTMLElement.prototype = BuiltInHTMLElement.prototype;
+        HTMLElement.prototype.constructor = HTMLElement;
+
+        function WeElement() {
+            console.log(this);
+            // 这里经过customElements.defin之后this的指向就会变成HTMLElement
+            var _this = HTMLElement.call(this)
+            // 这里必须返回不一样的_this
+            // 而不能是this，因为WeElement(_this)要区分与HTMLElement(this)
+            // _this -> like-button对象
+            console.log(_this)
+            return _this
+        }
+        WeElement.prototype = Object.create(HTMLElement.prototype, {
+            constructor: {
+                value: WeElement,
+            }
+        });
+        // 这里的顺序注意一下，先执行_inherits方法然后再prototype上面挂载方法，如果顺序不对的话，那么prototype上的方法将会被_inherits方法覆盖
+        WeElement.prototype.connectedCallback = () => {}
+        WeElement.prototype.disconnectedCallback = function () {}
+        WeElement.prototype.update = function () {}
+        WeElement.prototype.fire = function (name, data) {}
+        class LikeButton extends WeElement {}
+        customElements.define('like-button', LikeButton);
+    </script>
+</body>
+
+</html>

@@ -112,4 +112,7 @@ function WeElement() {
 
 |步骤|涉及的方法|
 |-|-|
-|||
+|改写原生`HTMLElement`对象变成一个新的构造函数|`window.HTMLElement=function(){return Reflect.construct(BuiltInHTMLElement, [], this.constructor)}`|
+|定义`WeElement`方法，并继承新的`HTMLElement`方法|触发`_inherits()`实现继承，并在`WeElement`的`prototype`挂载方法|
+|定义`class LikeButton extends WeElement {}`自定义组件|触发`WeElement`方法|
+|触发`WeElement`方法|触发`_classCallCheck(this, WeElement)`检查实例的类型，并把`HTMLElement.call(this)`的`this`方法加载到`WeElement`的构造函数内，此时`WeElement`的`this`不但有`HTMLElement`即`showdow DOM`还有`WeElement`本身的方法|

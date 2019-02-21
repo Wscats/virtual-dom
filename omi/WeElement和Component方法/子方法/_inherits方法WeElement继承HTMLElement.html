@@ -17,7 +17,8 @@
                     'polyfillWrapFlushCallback')) {
                 var BuiltInHTMLElement = HTMLElement;
                 window.HTMLElement = function () {
-                    console.log(this)
+                    console.log(this.constructor)
+                    // Reflect.construct(父类构造函数，父类的参数，子类构造函数) 实例化子类并继承父类
                     return Reflect.construct(BuiltInHTMLElement, [], this.constructor);
                 };
                 HTMLElement.prototype = BuiltInHTMLElement.prototype;
@@ -49,7 +50,12 @@
         var WeElement = (function(HTMLElement) {
             function WeElement(){
                 // 这里经过customElements.defin之后this的指向就会变成HTMLElement
-                HTMLElement.call(this)
+                var _this = HTMLElement.call(this)
+                // 这里必须返回不一样的_this
+                // 而不能是this，因为WeElement(_this)要区分与HTMLElement(this)
+                // _this -> like-button对象
+                // console.log({...this})
+                return _this
             }
             // HTMLElement.call(this)
             // 这里的顺序注意一下，先执行_inherits方法然后再prototype上面挂载方法，如果顺序不对的话，那么prototype上的方法将会被_inherits方法覆盖
@@ -60,7 +66,8 @@
             WeElement.prototype.fire = function (name, data) {}
             return WeElement
         })(HTMLElement)
-        class LikeButton extends WeElement {}
+        class LikeButton extends WeElement {
+        }
         customElements.define('like-button', LikeButton);
         // console.log(HTMLElement.prototype);
         // console.log(HTMLElement);
