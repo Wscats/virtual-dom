@@ -32,7 +32,7 @@
 
         WeElement.prototype.connectedCallback = function () {
             this.watch = new Observer();
-            this.install();
+            this.beforeInstall&&this.beforeInstall();
             this.proxyData()
             this.proxyMethods()
             const template = document.createElement('template');
@@ -47,14 +47,17 @@
             );
             // 编译模板,要在appendChild之后
             this.compileTemplate(attachShadow);
+            this.afterInstall&&this.afterInstall();
         }
         WeElement.prototype.proxyData = function () {
             Object.keys(this.data).forEach((key) => {
                 Object.defineProperty(this, key, {
                     set(newValue) {
-                        console.log("值发生了更改", newValue)
+                        this.beforeUpdate&&this.beforeUpdate();
+                        console.log("值发生了更改", newValue);
                         this.data[key] = newValue;
-                        this.watch.emit(key, null)
+                        this.watch.emit(key, null);
+                        this.afterUpdate&&this.afterUpdate();
                     },
                     get() {
                         console.log("我查看了该值")
@@ -141,7 +144,8 @@
             }
         }
         class LikeButton extends WeElement {
-            install() {
+            beforeInstall() {
+                console.log('挂载前')
                 this.data = {
                     name: '测试',
                     skill: 'ps'
@@ -166,9 +170,18 @@
                     }
                 }
             }
+            afterInstall(){
+                console.log('挂载后')
+            }
+            beforeUpdate(){
+                console.log('更新前')
+            }
+            afterUpdate(){
+                console.log('更新后')
+            }
         }
         class HateButton extends WeElement {
-            install() {
+            beforeInstall() {
                 this.data = {
                     name: '测试',
                     skill: 'ps'
