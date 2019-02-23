@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <button id="get">触发proxy的get</button>
+    <button id="set">触发proxy的set</button>
+    <script>
+        class createProxy {
+            constructor() {
+                return new Proxy({}, {
+                    get(object, prop) {
+                        console.log('get');
+                        return () => {
+                            console.log('test');
+                        }
+                    },
+                    set(object, prop, value, ...args) {
+                        console.log(object, prop, value, ...args);
+                    }
+                })
+            }
+        }
+        // fn是被prox代理的对象
+        let fn = new createProxy();
+        document.querySelector("#get").onclick = () => {
+            fn['test'](); // 等价于fn.test()
+        }
+        document.querySelector("#set").onclick = () => {
+            fn['name'] = 'lemon'; // fn.test
+        }
+    </script>
+</body>
+
+</html>

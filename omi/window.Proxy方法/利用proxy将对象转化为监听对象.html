@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /**
+         * [Observer description] 监听器,监听对象,触发后通知订阅
+         * @param {[type]}   obj [description] 需要被监听的对象
+         */
+        const Observer = obj => {
+            const dep = new Dep();
+            return new Proxy(obj, {
+                get: function (target, key, receiver) {
+                    // 如果订阅者存在，直接添加订阅
+                    if (Dep.target) {
+                        dep.addSub(key, Dep.target);
+                    }
+                    return Reflect.get(target, key, receiver);
+                },
+                set: function (target, key, value, receiver) {
+                    // 如果对象值没有变,那么不触发下面的操作直接返回    
+                    if (Reflect.get(receiver, key) === value) {
+                        return;
+                    }
+                    const res = Reflect.set(target, key, observify(value), receiver);
+                    // 当值被触发更改的时候,触发 Dep 的通知方法
+                    dep.notify(key);
+                    return res;
+                },
+            });
+        };
+
+        /**
+         * 将对象转为监听对象
+         * @param {*} obj 要监听的对象
+         */
+        function observify(obj) {
+            if (!isObject(obj)) {
+                return obj;
+            }
+
+            // 深度监听
+            Object.keys(obj).forEach(key => {
+                obj[key] = observify(obj[key]);
+            });
+
+            return Observer(obj);
+        }
+
+        const isObject = obj =>
+            Object.prototype.toString.call(obj) === '[object Object]';
+
+        const foreach = (obj = {}, fn) => {
+            Object.keys(obj).forEach(key => fn && fn(key));
+        };
+
+        /**
+         * [subs description] 订阅器,储存订阅者
+         * @type {Map}
+         */
+        class Dep {
+            constructor() {
+                // 我们用 hash 储存订阅者
+                this.subs = new Map();
+            }
+            // 添加订阅者
+            addSub(key, sub) {
+                // 取出键为 key 的订阅者
+                const currentSub = this.subs.get(key);
+                if (currentSub) {
+                    currentSub.add(sub);
+                } else {
+                    // 用 Set 数据结构储存,保证唯一值
+                    this.subs.set(key, new Set([sub]));
+                }
+            }
+            // 通知
+            notify(key) {
+                if (this.subs.get(key)) {
+                    this.subs.get(key).forEach(sub => {
+                        sub.update();
+                    });
+                }
+            }
+        }
+
+        let obj = {
+            id: 1,
+            people: {
+                skill: ['ps', 'js', 'css'],
+                name: 'eno'
+            }
+        }
+        let proxyObj = observify(obj)
+        console.log(proxyObj)
+    </script>
+</body>
+
+</html>

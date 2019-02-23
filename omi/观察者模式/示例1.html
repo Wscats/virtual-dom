@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        let uid = 0;
+        class Dep {
+            constructor() {
+                this.id = uid++;
+                this.subs = [];
+            }
+            addSub(sub) {
+                this.subs.push(sub);
+            }
+            depend() {
+                Dep.target.addDep(this);
+            }
+            removeSub(sub) {
+                const index = this.subs.indexOf(sub);
+                if (index != -1) {
+                    this.subs.splice(index, 1);
+                }
+            }
+            notify() {
+                this.subs.forEach(function (sub) {
+                    sub.update();
+                });
+            }
+        }
+        this.watch = new Dep();
+        class Watch {
+            constructor(props){
+                this.callback = props.callback;
+            }
+            update(callback) {
+                this.callback()
+            }
+        }
+        this.watch.addSub(new Watch({
+            callback(){
+                console.log(1)
+            }
+        }))
+        this.watch.notify()
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        var name = '小白';
+        var obj = {
+            name: '小红'
+        };
+        function sayName() {
+            return this.name;
+        }
+        console.log(sayName.call(this)); //输出小白
+        // 本来sayName的this是window,call相当于改变this的指向并执行sayName
+        console.log(sayName.call(obj)); //输入小红
+        // 等价于用bind改变this执行再用括号执行，call 约= bind + 函数执行
+        console.log(sayName.bind(obj)()); //输入小红
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function createProxy(target, onChange) {
+            const trap = {
+                get(object, prop) {
+                    console.log('get');
+                    const value = object[prop]
+                    // 这里可以优化一下，不应该每次都创建新的 proxy
+                    if (typeof value === 'object' && value !== null) {
+                        return createProxy(object[prop], onChange)
+                    }
+                    return value
+                },
+                set(object, prop, value, ...args) {
+                    console.log('set');
+                    onChange();
+                    return Reflect.set(object, prop, value, ...args)
+                }
+            }
+            return new Proxy(target, trap)
+        }
+        let obj = createProxy({
+            id: 1,
+            people: {
+                skill: ['ps', 'js', 'css'],
+                name: 'eno'
+            }
+        }, () => {
+            console.log('success')
+        })
+        // obj.id = 2
+        // 由于修改对象它能触发get所以我们能在get里面继续去劫持里层对象
+        // obj.people.name = 'lemon'
+        obj.people.skill[0] = 'less'
+        // obj.people.skill.push('test')
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <p>监听对象</p>
+    <button id="btn1">改变基本类型</button>
+    <button id="btn2">改变对象</button>
+    <button id="btn3">改变数组</button>
+    <p>监听数组</p>
+    <script>
+        let handler = {
+            get: function (target, name) {
+                console.log(target, name);
+                return name in target ? target[name] : null;
+            },
+            set: function (obj, prop, value) {
+                console.log(obj, prop, value);
+                obj[prop] = value;
+                // return true是一定要加的
+                return true;
+            }
+        };
+        
+        let p = new Proxy({
+            name: 'eno',
+            skill: ['ps', 'css', 'js'],
+            obj: {
+                age: 18,
+                height: 178
+            }
+        }, handler);
+        console.log(p);
+        // 以下两个会触发set
+        
+        document.querySelector('#btn1').onclick = function(){
+            p.name = 'lemon'
+        }
+        document.querySelector('#btn2').onclick = function(){
+            p.obj.height = 190
+        }
+        document.querySelector('#btn3').onclick = function(){
+            p.skill[0] = 'less'
+        }
+    </script>
+</body>
+
+</html>

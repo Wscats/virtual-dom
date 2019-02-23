@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        class Observer {
+            constructor(data) {
+                this.data = this.proxyData(data, () => {
+                    console.log('test');
+                });
+                console.log(this.data);
+            }
+            proxyData(data, proxyDataCallback) {
+                let _this = this;
+                let dep = new Dep();
+                const trap = {
+                    get(object, prop) {
+                        console.log('get');
+                        if (Dep.target) {
+                            dep.depend();
+                        }
+                        const value = object[prop]
+                        // 这里可以优化一下，不应该每次都创建新的 proxy
+                        if (typeof value === 'object' && value !== null) {
+                            return _this.proxyData(object[prop], proxyDataCallback)
+                        }
+                        return value
+                    },
+                    set(object, prop, value, ...args) {
+                        console.log('set');
+                        proxyDataCallback();
+                        dep.notify();
+                        return Reflect.set(object, prop, value, ...args)
+                    }
+                }
+                return new Proxy(data, trap)
+            }
+        }
+        let uid = 0;
+        class Dep {
+            constructor() {
+                this.id = uid++;
+                this.subs = [];
+            }
+            addSub(sub) {
+                this.subs.push(sub);
+            }
+            depend() {
+                Dep.target.addDep(this);
+            }
+            removeSub(sub) {
+                const index = this.subs.indexOf(sub);
+                if (index != -1) {
+                    this.subs.splice(index, 1);
+                }
+            }
+            notify() {
+                this.subs.forEach(function (sub) {
+                    sub.update();
+                });
+            }
+        }
+        Dep.target = null;
+        let obj = {
+            id: 1,
+            people: {
+                skill: ['ps', 'js', 'css'],
+                name: 'eno'
+            }
+        };
+        let proxyObj = new Observer(obj);
+        console.log(proxyObj);
+        // 这能触发劫持
+        // proxyObj.data.people.skill[0]
+        // 这不能触发劫持 但能触发get
+        // proxyObj.data.people.skill.push('less')
+    </script>
+</body>
+
+</html>
