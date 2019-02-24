@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        class Dep {
+            constructor() {
+                // 我们用 hash 储存订阅者
+                this.subs = new Map();
+            }
+            // 添加订阅者
+            addSub(key, sub) {
+                // 取出键为 key 的订阅者
+                const currentSub = this.subs.get(key);
+                if (currentSub) {
+                    currentSub.add(sub);
+                } else {
+                    // 用 Set 数据结构储存,保证唯一值
+                    this.subs.set(key, new Set([sub]));
+                }
+            }
+            // 通知
+            notify(key) {
+                if (this.subs.get(key)) {
+                    this.subs.get(key).forEach(sub => {
+                        sub.update();
+                    });
+                }
+            }
+        }
+
+        class Watcher {
+            constructor(vm, exp, cb) {
+                this.vm = vm;
+                this.exp = exp;
+                this.cb = cb;
+                this.value = this.get();
+            }
+            get() {
+                const exp = this.exp;
+                let value;
+                Dep.target = this;
+                if (typeof exp === 'function') {
+                    value = exp.call(this.vm);
+                } else if (typeof exp === 'string') {
+                    value = this.vm[exp];
+                }
+                Dep.target = null;
+                return value;
+            }
+            update() {
+                pushQueue(this);
+            }
+            run() {
+                const val = this.get();
+                this.cb.call(this.vm, val, this.value);
+                this.value = val;
+            }
+        }
+    </script>
+</body>
+
+</html>

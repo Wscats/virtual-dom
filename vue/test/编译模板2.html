@@ -10,6 +10,35 @@
 
 <body>
     <script>
+        class Watcher {
+            constructor(vm, exp, cb) {
+                this.vm = vm;
+                this.exp = exp;
+                this.cb = cb;
+                this.value = this.get();
+            }
+            get() {
+                const exp = this.exp;
+                let value;
+                Dep.target = this;
+                if (typeof exp === 'function') {
+                    value = exp.call(this.vm);
+                } else if (typeof exp === 'string') {
+                    value = this.vm[exp];
+                }
+                Dep.target = null;
+                return value;
+            }
+            update() {
+                pushQueue(this);
+            }
+            run() {
+                const val = this.get();
+                this.cb.call(this.vm, val, this.value);
+                this.value = val;
+            }
+        }
+
         class Compile {
             constructor(vm) {
                 this._vm = vm;
@@ -66,7 +95,7 @@
                             child = document.createTextNode('');
                             compileUtil.text(child, _vm, children);
                             break;
-                        // 如果子元素是一个函数，可以拿出来执行
+                            // 如果子元素是一个函数，可以拿出来执行
                         case 'function':
                             child = document.createTextNode('');
                             compileUtil.text(child, _vm, children);
@@ -101,9 +130,9 @@
                 const update = updater[type];
                 update && update(node, this.getVal(vm, exp));
 
-                // new Watcher(vm, exp, value => {
-                //     update && update(node, value);
-                // });
+                new Watcher(vm, exp, value => {
+                    update && update(node, value);
+                });
             },
             text(node, vm, exp) {
                 this.bind(node, vm, exp, 'text');
@@ -156,7 +185,7 @@
         // 这里可以放入函数，它会帮你解析并且会用call改变这个回调函数的this指向vm，我们可以在这里返回vm中的值
         console.log(createElement.div({
             'name': 'lemon',
-        }, function(){
+        }, function () {
             // 这个this就是vm
             console.log(this);
             return this.name;
