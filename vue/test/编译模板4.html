@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <my-header></my-header>
+    <script>
+        // 编译模板
+        class Compile {
+            constructor(vm) {
+                this._vm = vm;
+                return (type, props, ...childrens) => {
+                    return new Proxy({}, {
+                        get: this._getElement.bind(this),
+                    })[type](props, ...childrens);
+                }
+            }
+            _getElement(target, tagName) {
+                return (attrs = {}, ...childrens) => {
+                    this._elem = document.createElement(tagName);
+                    this._attrs = attrs;
+                    this._childrens = childrens;
+                    this._bindAttrs();
+                    this._addChildrens();
+                    return this._elem;
+                };
+            }
+            _bindAttrs() {
+                const {
+                    _attrs,
+                    _elem
+                } = this;
+                Object.keys(_attrs).forEach(attr => {
+                    _elem.setAttribute(attr, _attrs[attr]);
+                });
+            }
+            _addChildrens() {
+                const {
+                    _childrens,
+                    _elem,
+                    _vm
+                } = this;
+                _childrens.forEach(children => {
+                    console.log(children);
+                    let child;
+                    switch (typeof children) {
+                        case 'string':
+                            child = document.createTextNode('');
+                            child.textContent = children;
+                            break;
+                        default:
+                            child = children;
+                    }
+                    _elem.appendChild(child);
+                });
+            }
+        }
+
+
+        class Xheader extends HTMLElement {
+            constructor() {
+                super();
+                // vm为当前模板的数据
+                let createElement = new Compile();
+                let template = createElement("div", {
+                        name: "lemon"
+                    },
+                    "hello Wolrd",
+                    createElement("p", {
+                        skill: "ps"
+                    }, "Lemon"),
+                    createElement("p", {
+                        age: "18"
+                    }, "Eno")
+                );
+                console.log(template);
+                console.log(this.getAttribute('name'))
+                // 创建一颗可见的DOM树，这棵树会附着到某个DOM元素上
+                // 这棵树的根节点称之为shadow root，只有通过shadow root 才可以访问内部的shadow dom，并且外部的css样式也不会影响到shadow dom上
+                // 相当于创建了一个独立的作用域
+                // console.log(this)
+                // templateContent.onclick = function(){
+                //     console.log(1)
+                // }
+                const shadow = this.attachShadow({
+                    mode: 'open' // 'open' 表示该shadow dom可以通过js 的函数进行访问
+                })
+                shadow.appendChild(
+                    template.cloneNode(true) // 操作shadow dom
+                );
+                console.log(shadow.childNodes)
+            }
+        }
+        // 允许自定义元素及其行为，然后可以在您的用户界面中按照需要使用它们
+        const myHeader = customElements.define('my-header', Xheader);
+    </script>
+</body>
+
+</html>

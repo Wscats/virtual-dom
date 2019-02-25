@@ -108,7 +108,9 @@ function WeElement() {
 
 # WeElement组件的产生过程
 
-[详见_inherits方法WeElement继承HTMLElement.html](https://github.com/Wscats/virtual-dom/blob/master/omi/WeElement%E5%92%8CComponent%E6%96%B9%E6%B3%95/%E5%AD%90%E6%96%B9%E6%B3%95/_inherits%E6%96%B9%E6%B3%95WeElement%E7%BB%A7%E6%89%BFHTMLElement.html)
+## 旧写法
+
+- [详见_inherits方法WeElement继承HTMLElement.html](https://github.com/Wscats/virtual-dom/blob/master/omi/WeElement%E5%92%8CComponent%E6%96%B9%E6%B3%95/%E5%AD%90%E6%96%B9%E6%B3%95/_inherits%E6%96%B9%E6%B3%95WeElement%E7%BB%A7%E6%89%BFHTMLElement.html)
 
 |步骤|涉及的方法|
 |-|-|
@@ -116,3 +118,31 @@ function WeElement() {
 |定义`WeElement`方法，并继承新的`HTMLElement`方法|触发`_inherits()`实现继承，并在`WeElement`的`prototype`挂载方法|
 |定义`class LikeButton extends WeElement {}`自定义组件|触发`WeElement`方法|
 |触发`WeElement`方法|触发`_classCallCheck(this, WeElement)`检查实例的类型，并把`HTMLElement.call(this)`的`this`方法加载到`WeElement`的构造函数内，此时`WeElement`的`this`不但有`HTMLElement`即`showdow DOM`还有`WeElement`本身的方法|
+
+其实上面整个继承的过程是可以用下面`class`的`extends`来解决，结果也是完全一样的
+
+`WeElement`继承于原生的`HTMLElement`，然后自身原型挂载了几个独有的方法`connectedCallback,disconnectedCallback,update,fire`，所以后面所有的组件只要是继承于`WeElement`，就会有上面四个共同的方法
+
+## 新写法
+
+- [详见_inherits方法WeElement继承HTMLElement3.html](https://github.com/Wscats/virtual-dom/blob/master/omi/WeElement%E5%92%8CComponent%E6%96%B9%E6%B3%95/%E5%AD%90%E6%96%B9%E6%B3%95/_inherits%E6%96%B9%E6%B3%95WeElement%E7%BB%A7%E6%89%BFHTMLElement3.html)
+```js
+class WeElement extends HTMLElement {
+    constructor(props){
+        super(props)
+        console.log(this) // <like-button></like-button>
+    }
+    connectedCallback = () => {}
+    disconnectedCallback = function () {}
+    update = function () {}
+    fire = function (name, data) {}
+}
+class LikeButton extends WeElement {
+    constructor(props){
+        super(props)
+        console.log(this) // <like-button></like-button>
+        console.log({...this}) // {connectedCallback,disconnectedCallback,update,fire}
+    }
+}
+customElements.define('like-button', LikeButton);
+```

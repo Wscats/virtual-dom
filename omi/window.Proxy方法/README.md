@@ -185,6 +185,74 @@ this._bindDirectives(attr, _elem);
 ```js
 _elem.setAttribute(attr, _attrs[attr]);
 ```
+所以`createElement()`方法其实可以在上面基础上进行一下封装，就可以变成类似`React.createElemnet()`方法，当然这里省略了指令和JSX里面包含有函数式编程的情况
+```js
+// 编译模板
+class Compile {
+    constructor(vm) {
+        this._vm = vm;
+        return (type, props, ...childrens) => {
+            return new Proxy({}, {
+                get: this._getElement.bind(this),
+            })[type](props, ...childrens);
+        }
+    }
+    _getElement(target, tagName) {
+        return (attrs = {}, ...childrens) => {
+            this._elem = document.createElement(tagName);
+            this._attrs = attrs;
+            this._childrens = childrens;
+            this._bindAttrs();
+            this._addChildrens();
+            return this._elem;
+        };
+    }
+    _bindAttrs() {
+        const {
+            _attrs,
+            _elem
+        } = this;
+        Object.keys(_attrs).forEach(attr => {
+            _elem.setAttribute(attr, _attrs[attr]);
+        });
+    }
+    _addChildrens() {
+        const {
+            _childrens,
+            _elem,
+            _vm
+        } = this;
+        _childrens.forEach(children => {
+            console.log(children);
+            let child;
+            switch (typeof children) {
+                case 'string':
+                    child = document.createTextNode('');
+                    child.textContent = children;
+                    break;
+                default:
+                    child = children;
+            }
+            _elem.appendChild(child);
+        });
+    }
+}
+
+// vm为当前模板的数据
+let createElement = new Compile();
+let template = createElement("div", {
+        name: "lemon"
+    },
+    "hello Wolrd",
+    createElement("p", {
+        skill: "ps"
+    }, "Lemon"),
+    createElement("p", {
+        age: "18"
+    }, "Eno")
+);
+console.log(template); //<div name="lemon">hello Wolrd<p skill="ps">Lemon</p><p age="18">Eno</p></div>
+```
 
 # 参考
 
