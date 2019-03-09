@@ -111,6 +111,7 @@ function WeElement() {
 ## 旧写法
 
 - [详见_inherits方法WeElement继承HTMLElement.html](https://github.com/Wscats/virtual-dom/blob/master/omi/WeElement%E5%92%8CComponent%E6%96%B9%E6%B3%95/%E5%AD%90%E6%96%B9%E6%B3%95/_inherits%E6%96%B9%E6%B3%95WeElement%E7%BB%A7%E6%89%BFHTMLElement.html)
+- [JS之理解ES6 继承extends](https://segmentfault.com/a/1190000010407445?utm_medium=referral&utm_source=tuicool)
 
 |步骤|涉及的方法|
 |-|-|
@@ -128,20 +129,28 @@ function WeElement() {
 - [详见_inherits方法WeElement继承HTMLElement3.html](https://github.com/Wscats/virtual-dom/blob/master/omi/WeElement%E5%92%8CComponent%E6%96%B9%E6%B3%95/%E5%AD%90%E6%96%B9%E6%B3%95/_inherits%E6%96%B9%E6%B3%95WeElement%E7%BB%A7%E6%89%BFHTMLElement3.html)
 ```js
 class WeElement extends HTMLElement {
-    constructor(props){
+    constructor(props) {
         super(props)
         console.log(this) // <like-button></like-button>
     }
-    connectedCallback = () => {}
-    disconnectedCallback = function () {}
-    update = function () {}
-    fire = function (name, data) {}
+    // 这个会执行connectedCallback生命周期
+    connectedCallback() {
+        console.log('connectedCallback')
+    }
+    disconnectedCallback() {
+        console.log('disconnectedCallback')
+    }
+    // 赋予函数的话会在this里面找到
+    update = function() {}
+    fire = function(name, data) {}
 }
 class LikeButton extends WeElement {
-    constructor(props){
+    constructor(props) {
         super(props)
         console.log(this) // <like-button></like-button>
-        console.log({...this}) // {connectedCallback,disconnectedCallback,update,fire}
+        console.log({
+            ...this
+        }) // {update,fire}
     }
 }
 customElements.define('like-button', LikeButton);

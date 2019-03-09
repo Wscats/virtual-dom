@@ -11,15 +11,19 @@
 <body>
     <like-button></like-button>
     <script>
+        // 判断是否数组
         function isArray(obj) {
             return '[object Array]' === Object.prototype.toString.call(obj);
         }
         var diffLevel = 0;
-
+        // diff方法
         function diff(dom, vnode, context, mountAll, parent, componentRoot) {
             var ret;
             if (!diffLevel++) {
+                // 用来指代当前的渲染是否内SVG元素的内部或者我们是否在diff一个SVG元素(SVG元素需要特殊处理)。
                 isSvgMode = null != parent && void 0 !== parent.ownerSVGElement;
+                // 是指当前的diff的元素没有缓存但是对应的dom元素必须存在
+                // 只有当前的dom节点并不是由Preact所创建并渲染的才会使得hydrating为true
                 hydrating = null != dom && !('__omiattr_' in dom);
             }
             if (isArray(vnode)) {
@@ -42,9 +46,13 @@
                 });
             } else {
                 if (isArray(dom)) ret = idiff(dom[0], vnode, context, mountAll, componentRoot);
+                // ret会返回经过diff之后的真实DOM结构
+                // 返回的是一个真实的dom节点
                 else ret = idiff(dom, vnode, context, mountAll, componentRoot);
+                // 如果父节点之前没有创建的这个子节点，则将子节点添加到父节点之后
                 if (parent && ret.parentNode !== parent) parent.appendChild(ret);
             }
+            // diffLevel回减到0说明已经要结束diff的调用
             if (!--diffLevel) hydrating = !1;
             return ret;
         }
@@ -70,7 +78,9 @@
             var vnodeName = vnode.nodeName;
             isSvgMode = 'svg' === vnodeName ? !0 : 'foreignObject' === vnodeName ? !1 : isSvgMode;
             vnodeName = String(vnodeName);
+            // 判断是否有dom
             if (!dom || !isNamedNode(dom, vnodeName)) {
+                // 创建节点
                 out = createNode(vnodeName, isSvgMode);
                 if (dom) {
                     while (dom.firstChild) out.appendChild(dom.firstChild);
@@ -80,23 +90,35 @@
             }
             var fc = out.firstChild,
                 props = out.__omiattr_,
+                // 获取children,子元素
                 vchildren = vnode.children;
+            // 判断是否有props
             if (null == props) {
                 props = out.__omiattr_ = {};
-                for (var a = out.attributes, i = a.length; i--;) props[a[i].name] = a[i].value;
+                for (var a = out.attributes, i = a.length; i--;) {
+                    props[a[i].name] = a[i].value;
+                }
             }
             if (!hydrating && vchildren && 1 === vchildren.length && 'string' == typeof vchildren[0] && null != fc &&
                 void 0 !== fc.splitText && null == fc.nextSibling) {
-                if (fc.nodeValue != vchildren[0]) fc.nodeValue = vchildren[0];
-            } else if (vchildren && vchildren.length || null != fc)
-                if ('WeElement' != out.constructor.is || !out.constructor.noSlot) innerDiffNode(out, vchildren, context,
-                    mountAll, hydrating || null != props.dangerouslySetInnerHTML);
-            diffAttributes(out, vnode.attributes, props, vnode.children);
-            if (out.props) out.props.children = vnode.children;
+                if (fc.nodeValue != vchildren[0]) {
+                    fc.nodeValue = vchildren[0];
+                }
+            } 
+            // 判断是否有vnode.children
+            else if (vchildren && vchildren.length || null != fc)
+                if ('WeElement' != out.constructor.is || !out.constructor.noSlot) {
+                    innerDiffNode(out, vchildren, context, mountAll, hydrating || null != props.dangerouslySetInnerHTML);
+                    diffAttributes(out, vnode.attributes, props, vnode.children);
+                }
+            if (out.props) {
+                out.props.children = vnode.children;
+            }
             isSvgMode = prevSvgMode;
             return out;
         }
 
+        // 对比子元素
         function innerDiffNode(dom, vchildren, context, mountAll, isHydrating) {
             var j, c, f, vchild, child, originalChildren = dom.childNodes,
                 children = [],

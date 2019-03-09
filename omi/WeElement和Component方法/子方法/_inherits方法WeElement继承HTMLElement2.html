@@ -37,7 +37,7 @@
             }
         });
         // 这里的顺序注意一下，先执行_inherits方法然后再prototype上面挂载方法，如果顺序不对的话，那么prototype上的方法将会被_inherits方法覆盖
-        WeElement.prototype.connectedCallback = () => {}
+        WeElement.prototype.connectedCallback = function() {}
         WeElement.prototype.disconnectedCallback = function () {}
         WeElement.prototype.update = function () {}
         WeElement.prototype.fire = function (name, data) {}
