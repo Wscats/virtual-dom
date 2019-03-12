@@ -122,6 +122,7 @@ if (null == props) {
 
 # innerDiffNode
 
+这里是处理子节点，并且递归触发`idiff`方法
 ```js
 {
     dom: button,
@@ -140,7 +141,7 @@ if (null == props) {
 
 - render 触发`idiff`
 - diff `diff`会根据叠加器触发`idiff`然后重置`idiff`
-- idiff `idiff`生成文本节点或者元素节点
+- idiff 这里是`idiff`的核心，里面会判断每层的节点是否一样(`isNamedNode`方法)，然后如果不一样用`idiff`生成文本节点或者元素节点
 - innerDiffNode `innerDiffNode`和`idiff`互相配合实现递归，生成子节点
 - diffAttributes 往节点添加或者移除事件，并且绑定更新属性值
 

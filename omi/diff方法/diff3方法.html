@@ -11,6 +11,7 @@
 <body>
     <div id="demo"></div>
     <script>
+        // 虚拟DOM
         let vnode = {
             attributes: {
                 key: 1,
@@ -18,16 +19,20 @@
                     console.log({
                         ...this
                     })
-                    // this.data.liked = true
-                    // this.update()
                 }
             },
             children: ["Like"],
             key: 1,
             nodeName: "button"
         }
+        // 真实DOM
+        var p = document.createElement("p")
+        var text = document.createTextNode("这是新段落")
+        p.appendChild(text)
+        let dom = p
+        console.log(dom)
 
-        let l = diff(null, vnode)
+        let l = diff(dom, vnode)
 
         function diff(dom, vnode) {
             // 返回的是一个真实的dom节点
@@ -42,8 +47,12 @@
                 out = document.createTextNode(vnode)
                 return out
             }
+
+            var vnodeName = vnode.nodeName
+            vnodeName = String(vnodeName)
             // 如果没有初始dom的话
-            if (!dom) {
+            // 或者如果不是一个已经存在的元素或者类型有问题，则重新创建一个
+            if (!dom || !isNamedNode(dom, vnodeName)) {
                 // 创建节点
                 out = createNode(vnode.nodeName)
             }
@@ -68,7 +77,6 @@
         function innerDiffNode(dom, vchildren) {
             var f, vchild, child, originalChildren = dom.childNodes,
                 children = [],
-                childrenLen = 0,
                 vlen = vchildren ? vchildren.length : 0;
             if (0 !== vlen) {
                 for (var i = 0; i < vlen; i++) {
@@ -77,10 +85,15 @@
                     // 将子节点继续放进idiff入面生成节点
                     child = idiff(child, vchild);
                     f = originalChildren[i];
+                    // 变形匹配/寻找到/创建的DOM子元素来匹配vchild(深度匹配)
                     if (child && child !== dom && child !== f) {
                         // 最后合并进父节点中
                         if (null == f) {
                             dom.appendChild(child);
+                        } else if (child === f.nextSibling) {
+                            removeNode(f);
+                        } else {
+                            dom.insertBefore(child, f);
                         }
                     }
 
@@ -129,6 +142,10 @@
         // 绑定事件的回调函数
         function eventProxy(e) {
             return this.__l[e.type](e)
+        }
+
+        function isNamedNode(node, nodeName) {
+            return node.normalizedNodeName === nodeName || node.nodeName.toLowerCase() === nodeName.toLowerCase();
         }
 
         console.log(l)
