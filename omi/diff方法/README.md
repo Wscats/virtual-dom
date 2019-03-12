@@ -132,6 +132,18 @@ if (null == props) {
 }
 ```
 
+# diff的流程
+
+`render,diff和idiff`三个都接受两个相同的参数`dom`和`vnode`,除了第一次`dom`是为空之外，其余情况`dom`一般都会存在
+
+不同于`react`的两份`vnode`对比的做法，`omi`和`preact`的做法都是把当前真实`dom`和新的`vnode`做对比，然后进行差异更新
+
+- render 触发`idiff`
+- diff `diff`会根据叠加器触发`idiff`然后重置`idiff`
+- idiff `idiff`生成文本节点或者元素节点
+- innerDiffNode `innerDiffNode`和`idiff`互相配合实现递归，生成子节点
+- diffAttributes 往节点添加或者移除事件，并且绑定更新属性值
+
 # 参考文档
 
 - [从Preact了解一个类React的框架是怎么实现的(二): 元素diff](https://segmentfault.com/a/1190000011333383)
