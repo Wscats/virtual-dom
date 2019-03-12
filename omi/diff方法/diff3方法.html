@@ -25,12 +25,19 @@
             key: 1,
             nodeName: "button"
         }
-        // 真实DOM
+        // 真实DOM1
         var p = document.createElement("p")
         var text = document.createTextNode("这是新段落")
         p.appendChild(text)
+
+        console.log(p)
+
+        // 真实DOM2
+        // var btn = document.createElement("button")
+        // btn.appendChild(text)
+        // console.log(btn)
         let dom = p
-        console.log(dom)
+        
 
         let l = diff(dom, vnode)
 
@@ -82,6 +89,7 @@
                 for (var i = 0; i < vlen; i++) {
                     vchild = vchildren[i];
                     child = null;
+
                     // 将子节点继续放进idiff入面生成节点
                     child = idiff(child, vchild);
                     f = originalChildren[i];
@@ -92,9 +100,9 @@
                             dom.appendChild(child);
                         } else if (child === f.nextSibling) {
                             removeNode(f);
-                        } else {
-                            dom.insertBefore(child, f);
                         }
+                    } else {
+                        dom.insertBefore(child, f);
                     }
 
                 }

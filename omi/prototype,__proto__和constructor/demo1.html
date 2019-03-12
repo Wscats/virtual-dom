@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function Foo() {};
+        let f1 = new Foo();
+        console.log(f1.__proto__, Foo.prototype)
+        console.log(f1);
+        // 对象才有__proto__
+        // 函数才有prototype
+        // 任何函数在创建的时候，其实会默认同时创建该函数的prototype对象
+        // constructor属性也是对象才拥有的，它是从一个对象指向一个函数，含义就是指向该对象的构造函数
+        // f1.__proto__ === Foo.prototype
+    </script>
+</body>
+
+</html>
