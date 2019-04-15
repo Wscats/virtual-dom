@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="demo"></div>
+    <script>
+        // 虚拟DOM
+        let vnode = {
+            attributes: {
+                key: 1,
+                onClick: () => {
+                    console.log({
+                        ...this
+                    })
+                }
+            },
+            children: ["Like", {
+                attributes: {
+                    key: 1,
+                    onClick: () => {
+                        console.log({
+                            ...this
+                        })
+                    }
+                },
+                children: ["Like"],
+                key: 1,
+                nodeName: "button"
+            }],
+            key: 1,
+            nodeName: "div"
+        }
+        // 真实DOM1
+        var div = document.createElement("header")
+        var text = document.createTextNode("这是新段落")
+        var btn = document.createElement("button")
+        var text2 = document.createTextNode('按钮')
+        btn.appendChild(text2)
+        div.appendChild(text)
+        div.appendChild(btn)
+
+        console.log(div)
+
+        // 真实DOM2
+        // var btn = document.createElement("button")
+        // btn.appendChild(text)
+        // console.log(btn)
+        let dom = div
+
+
+        let l = diff(dom, vnode)
+
+        function diff(dom, vnode) {
+            // 返回的是一个真实的dom节点
+            let ret = idiff(dom, vnode)
+            return ret
+        }
+
+        function idiff(dom, vnode) {
+            var out = dom;
+            if ('string' == typeof vnode || 'number' == typeof vnode) {
+                // 不是文本节点，替换之前的节点，回收之前的节点
+                out = document.createTextNode(vnode)
+                return out
+            }
+
+            var vnodeName = vnode.nodeName
+            vnodeName = String(vnodeName)
+            // 如果没有初始dom的话
+            // 或者如果不是一个已经存在的元素或者类型有问题，则重新创建一个
+            if (!dom || !isNamedNode(dom, vnodeName)) {
+                // 创建节点
+                out = createNode(vnode.nodeName)
+                if (dom) {
+                    // 在后面你会发现preact的diffChildren的方式，是通过把真实dom的子节点与虚拟dom的子节点相比较，所以需要老的// 孩子暂时先移动到新的节点上
+                    // move children into the replacement node
+                    while (dom.firstChild) {
+                        out.appendChild(dom.firstChild);
+                    } // if the previous Element was mounted into the DOM, replace it inline
+                    if (dom.parentNode) {
+                        dom.parentNode.replaceChild(out, dom)
+                    };
+                }
+            }
+            let fc = out.firstChild;
+            // 处理vnode的子节点
+            let vchildren = vnode.children
+            // let props = out.__omiattr_
+            let props = {}
+
+            // 如果vchildren只有一个节点，且是textnode节点时,直接更改nodeValue，优化性能
+            // Optimization: fast-path for elements containing a single TextNode:
+            if (vchildren && vchildren.length === 1 && typeof vchildren[0] === 'string' && fc != null &&
+                fc.splitText !== undefined && fc.nextSibling == null) {
+                if (fc.nodeValue != vchildren[0]) {
+                    fc.nodeValue = vchildren[0];
+                }
+            }
+            // 比较子节点，将真实dom的children与vhildren比较
+            // otherwise, if there are existing or new children, diff them:
+            else if (vchildren && vchildren.length || fc != null) {
+                // 相当于_addChildrens
+                innerDiffNode(out, vchildren)
+            }
+            // 相当于_bindAttrs
+            diffAttributes(out, vnode.attributes, props, vnode.children)
+            return out
+        }
+
+        function createNode(nodeName) {
+            var node = document.createElement(nodeName)
+            node.__n = nodeName
+            return node
+        }
+
+        // 这里会递归用idiff来生成子节点
+        function innerDiffNode(dom, vchildren) {
+            var f, vchild, child, originalChildren = dom.childNodes,
+                children = [],
+                vlen = vchildren ? vchildren.length : 0;
+            if (0 !== vlen) {
+                for (var i = 0; i < vlen; i++) {
+                    vchild = vchildren[i];
+                    child = null;
+
+                    // 将子节点继续放进idiff入面生成节点
+                    child = idiff(child, vchild);
+                    f = originalChildren[i];
+                    // 变形匹配/寻找到/创建的DOM子元素来匹配vchild(深度匹配)
+                    if (child && child !== dom && child !== f) {
+                        // 最后合并进父节点中
+                        if (null == f) {
+                            dom.appendChild(child);
+                        } else if (child === f.nextSibling) {
+                            removeNode(f);
+                        }
+                    } else {
+                        dom.insertBefore(child, f);
+                    }
+
+                }
+            }
+        }
+
+        // 函数diffAttributes的主要作用就是将虚拟dom中attributes更新到真实的dom中
+        function diffAttributes(dom, attrs, old) {
+            let name
+            // 遍历props
+            // 通过将其设置为undefined，移除不在vnode中的属性
+            for (name in old) {
+                // 判断的条件是如果old[name]中存在，但attrs[name]不存在
+                if (!(attrs && attrs[name] != null) && old[name] != null) {
+                    // 首先遍历old中的属性，如果当前的属性attrs中不存在是，则通过函数setAccessor将其删除
+                    setAccessor(dom, name, old[name], old[name] = undefined)
+                }
+            }
+            // 增加或者更新的属性
+            for (name in attrs) {
+                // 如果attrs中的属性不是 children或者 innerHTML 并且
+                // 要么 之前的old里面没有该属性 ====> 说明是新增属性
+                // 要么 如果name是value或者checked属性(表单)， attrs[name] 与 dom[name] 不同，或者不是value或者checked属性，则和old[name]属性不同 ====> 说明是更新属性
+                if (name !== 'children' && name !== 'innerHTML' && (!(name in old) || attrs[name] !== (name ===
+                        'value' ||
+                        name === 'checked' ? dom[name] : old[name]))) {
+                    setAccessor(dom, name, old[name], old[name] = attrs[name])
+                }
+            }
+        }
+
+        function setAccessor(node, name, old, value) {
+            if (name[0] == 'o' && name[1] == 'n') {
+                // 事件处理函数 属性赋值
+                // 如果事件的名称是以Capture为结尾的，则去掉，并在捕获阶段节点监听事件
+                let useCapture = name !== (name = name.replace(/Capture$/, ''))
+                name = name.toLowerCase().substring(2);
+                if (value) {
+                    if (!old) node.addEventListener(name, eventProxy, useCapture)
+                } else {
+                    node.removeEventListener(name, eventProxy, useCapture)
+                }
+                (node.__l || (node.__l = {}))[name] = value
+            }
+        }
+        // 绑定事件的回调函数
+        function eventProxy(e) {
+            return this.__l[e.type](e)
+        }
+
+        function isNamedNode(node, nodeName) {
+            return node.normalizedNodeName === nodeName || node.nodeName.toLowerCase() === nodeName.toLowerCase();
+        }
+
+        console.log(l)
+        document.getElementById("demo").appendChild(l)
+    </script>
+</body>
+
+</html>

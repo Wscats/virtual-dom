@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="demo">
+
+    </div>
+    <script>
+        let diff = (oldDom, newDom) => {
+            // console.log(oldDom, newDom);
+            let parser = new DOMParser();
+            let oldX = parser.parseFromString(oldDom, "text/xml");
+            let newX = parser.parseFromString(oldDom, "text/xml");
+            // console.log(xmlDoc);
+            compileElement(oldX, newX);
+        }
+
+        let compileElement = (oldX, newX) => {
+            var oldXchildNodes = oldX.childNodes;
+            var newXchildNodes = newX.childNodes;
+            console.log(oldXchildNodes, newXchildNodes);
+            [].slice.call(oldXchildNodes).forEach(function (oldNode) {
+                [].slice.call(newXchildNodes).forEach(function (newNode) {
+                    console.log(oldNode, newNode);
+                    if (oldNode.childNodes && oldNode.childNodes.length) {
+                        compileElement(oldNode,newNode);
+                    }
+                })
+            })
+        }
+        let newDom = diff(`
+            <div>
+                hello
+                <p name="abc">
+                    world
+                    <span style="color:red">!</span>
+                </p>
+            </div>
+        `, `<div>
+                hello
+                <p name="abc">
+                    abc
+                    <span style="color:red">!</span>
+                </p>
+            </div>`)
+    </script>
+</body>
+
+</html>
