@@ -54,7 +54,6 @@
         // console.log(btn)
         let dom = div
 
-
         let l = diff(dom, vnode)
 
         function diff(dom, vnode) {
@@ -79,7 +78,8 @@
                 // 创建节点
                 out = createNode(vnode.nodeName)
                 if (dom) {
-                    // 在后面你会发现preact的diffChildren的方式，是通过把真实dom的子节点与虚拟dom的子节点相比较，所以需要老的// 孩子暂时先移动到新的节点上
+                    // 在后面你会发现preact的diffChildren的方式，是通过把真实dom的子节点与虚拟dom的子节点相比较，所以需要老的
+                    // 孩子暂时先移动到新的节点上
                     // move children into the replacement node
                     while (dom.firstChild) {
                         out.appendChild(dom.firstChild);
@@ -144,7 +144,6 @@
                     } else {
                         dom.insertBefore(child, f);
                     }
-
                 }
             }
         }
