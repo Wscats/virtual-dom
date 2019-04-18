@@ -1,3 +1,7 @@
+# 概念图
+
+<img src="./diff算法示意图.png" />
+
 # diff方法
 
 `function diff(dom, vnode, context, mountAll, parent, componentRoot)`接受五个参数
