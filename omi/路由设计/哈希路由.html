@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+</head>
+
+<body>
+	<ul>
+		<li><a href="#/eno">eno</a></li>
+		<li><a href="#/lemon">lemon</a></li>
+		<li><a href="#/winds?id=1">xie</a></li>
+		<li><a href="#/abc">not found</a></li>
+	</ul>
+	<script>
+		// 记录路由信息的对象
+		var mapping = {}
+		// 全局路由函数
+		window.route = function route(path, callback) {
+			// 路由表记载所有路由对应的回调函数
+			mapping[path] = {
+				callback: callback,
+			}
+		}
+		// 监听哈希路由的改变触发对应的回调函数
+		window.addEventListener('hashchange', change)
+
+		function change(evt) {
+			// 路由守卫的开关
+			var prevent = false
+			// 路由拦截，如果返回false则不进去后面的路由逻辑
+			if (evt.type === 'hashchange' && window.route.before) {
+				prevent = window.route.before(evt) === false
+			}
+			if (prevent) return
+			var path = window.location.hash.replace('#', '')
+			// 判断是否带参数的情况
+			var query = ''
+			// 判断是否有?带参数
+			if (path.indexOf('?') >= 0) {
+				// ?id=1 ==> {id:1}
+				query = getUrlParams(path)
+				path = path.split('?')[0]
+			}
+			// 判断是否找到对应的路由表
+			var notFound = true
+			if (mapping[path]) {
+				mapping[path].callback({
+					query,
+				})
+				notFound = false
+			}
+			// 如果找不到，执行*路由的逻辑
+			if (notFound) {
+				mapping['*'] && mapping['*'].callback()
+			}
+
+			if (evt.type === 'hashchange' && window.route.after) {
+				window.route.after(evt)
+			}
+		}
+
+		function getUrlParams(url) {
+			url = url.replace(/#.*$/, '')
+			var queryArray = url.split(/[?&]/).slice(1)
+			var i, args = {}
+			for (i = 0; i < queryArray.length; i++) {
+				var match = queryArray[i].match(/([^=]+)=([^=]+)/)
+				if (match !== null) {
+					args[match[1]] = decodeURIComponent(match[2])
+				}
+			}
+			return args
+		}
+	</script>
+	<script>
+		route('/', () => {})
+
+		route('/eno', (evt) => {
+			console.log(evt)
+		})
+
+		route('/lemon', (evt) => {
+			console.log(evt)
+		})
+
+		route('/winds', (evt) => {
+			console.log(evt)
+		})
+		route('*', function () {
+			console.log('not found')
+		})
+
+		route.before = (evt) => {
+			// 当返回false的时候，阻止进入路由
+			console.log('before')
+		}
+
+		route.after = (evt) => {
+			console.log('after')
+		}
+		console.log(mapping)
+	</script>
+</body>
+
+</html>
