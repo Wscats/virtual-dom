@@ -23,6 +23,7 @@
                 Dep.target.addDep(this);
             }
             removeSub(sub) {
+                console.log(this.subs)
                 const index = this.subs.indexOf(sub);
                 if (index != -1) {
                     this.subs.splice(index, 1);
@@ -36,18 +37,34 @@
         }
         this.watch = new Dep();
         class Watch {
-            constructor(props){
+            constructor(props) {
                 this.callback = props.callback;
             }
             update(callback) {
                 this.callback()
             }
         }
+        // 收集需要触发的依赖
         this.watch.addSub(new Watch({
-            callback(){
+            callback() {
                 console.log(1)
             }
         }))
+        let watch2 = new Watch({
+            callback() {
+                console.log(2)
+            }
+        })
+        this.watch.addSub(watch2)
+        this.watch.addSub(new Watch({
+            callback() {
+                console.log(3)
+            }
+        }))
+        // 移除监听
+        this.watch.removeSub(watch2)
+        console.log(this.watch)
+        // 集体触发更新
         this.watch.notify()
     </script>
 </body>
