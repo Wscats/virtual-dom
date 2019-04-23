@@ -12,11 +12,10 @@
     <ul>
         <li><a href="#/eno">eno</a></li>
         <li><a href="#/lemon">lemon</a></li>
-        <li><a href="#/winds?id=1">xie</a></li>
+        <li><a href="#/winds?id=1">winds</a></li>
         <li><a href="#/abc">not found</a></li>
     </ul>
-    <!-- <my-eno></my-eno> -->
-    <my-router></my-router>
+    <!-- 相当于vue-router中的router-view组件 -->
     <div id="router"></div>
     <script>
         // 记录路由信息的对象
@@ -108,25 +107,25 @@
             console.log('after')
         }
         console.log(mapping)
-        customElements.define('my-router', class Xheader extends HTMLElement {
-            constructor() {
-                super();
-                const template = document.createElement('template');
-                // 观察者模式
-                // 遍历路由，记录模板
-                Object.keys(mapping).forEach((item) => {
-                    if (item !== '*' && item !== '/') {
-                        mapping[item].template = document.createElement(`my-${item.slice(1)}`)
-                    }
-                })
-                const templateContent = template.content;
-                this.attachShadow({
-                    mode: 'open' // 'open' 表示该shadow dom可以通过js 的函数进行访问
-                }).appendChild(
-                    templateContent.cloneNode(true) // 操作shadow dom
-                );
+
+        // 初始化路由
+        ;(function initRouter() {
+            // 遍历路由，记录模板
+            Object.keys(mapping).forEach((item) => {
+                if (item !== '*' && item !== '/') {
+                    mapping[item].template = document.createElement(`my-${item.slice(1)}`)
+                }
+            })
+            var path = window.location.hash.replace('#', '')
+            // 判断是否有?带参数
+            if (path.indexOf('?') >= 0) {
+                // ?id=1 ==> {id:1}
+                path = path.split('?')[0]
             }
-        });
+            // 路由初始化前显示第一个组件
+            document.querySelector("#router").appendChild(mapping[path].template)
+        })();
+
         customElements.define('my-eno', class Xheader extends HTMLElement {
             constructor() {
                 super();
