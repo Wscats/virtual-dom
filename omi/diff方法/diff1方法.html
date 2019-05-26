@@ -56,7 +56,6 @@
             if (!--diffLevel) hydrating = !1;
             return ret;
         }
-
         function idiff(dom, vnode, context, mountAll, componentRoot) {
             if (dom && vnode && dom.props) dom.props.children = vnode.children;
             var out = dom,
