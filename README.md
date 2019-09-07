@@ -13,3 +13,4 @@
 - [htm()](https://github.com/Wscats/virtual-dom/tree/master/omi/htm模块)
 - [WeElement()和Component()](https://github.com/Wscats/virtual-dom/tree/master/omi/WeElement和Component方法)
 - [window.Proxy()](https://github.com/Wscats/virtual-dom/tree/master/omi/window.Proxy方法)
+- [diff()](https://github.com/Wscats/virtual-dom/tree/master/omi/diff方法)
