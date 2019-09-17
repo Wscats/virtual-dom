@@ -1,6 +1,6 @@
 # 创建createElement()方法
 
-这个`createElement()`写得比较有意思，区别于`React.createElement()`的思路
+这个`createElement()`写得比较有意思，区别于`React.createElement()`的思路：
 
 ```js
 class Compile {
