@@ -1,6 +1,5 @@
 var htm = require('htm');
 var fs = require('fs');
-
 function h(type, props, ...children) {
     return {
         type,
