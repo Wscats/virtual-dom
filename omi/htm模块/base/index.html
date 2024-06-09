@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="constants.js"></script>
+    <script src="build.js"></script>
+    <script src="index.js"></script>
+    <div class="card">
+      <img src="图标" />
+      <div class="file-info">
+        <p>标题</p>
+        <p href="">文件大小</p>
+      </div>
+      <button>按钮</button>
+    </div>
+    <script>
+      console.log(window);
+      treeify(build`<div href=""><p href="">123</p></div>`);
+    </script>
+  </body>
+</html>
