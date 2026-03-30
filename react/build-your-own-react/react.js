@@ -1,3 +1,5 @@
+'use strict';
+
 function createElement(parentEle, props, ...childEles) {
     if (typeof parentEle === 'function' && /^\s*class\s+/.test(parentEle.toString())) {
         let component = new parentEle();

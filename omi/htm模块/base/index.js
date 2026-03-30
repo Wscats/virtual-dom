@@ -1,3 +1,5 @@
+'use strict';
+
 const CACHES = new Map();
 
 const regular = function (statics) {

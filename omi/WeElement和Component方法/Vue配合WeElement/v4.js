@@ -1,3 +1,5 @@
+'use strict';
+
   /**
    * [Observer description] 监听器,监听对象,触发后通知订阅
    * @param {[type]}   obj [description] 需要被监听的对象

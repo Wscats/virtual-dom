@@ -6,7 +6,7 @@ export default class {
             constructor() {
                 super();
                 let template = new Vue(config)._template;
-                var shadow = this.attachShadow({
+                const shadow = this.attachShadow({
                     mode: 'open'
                 });
                 shadow.appendChild(template); // 操作shadow dom;

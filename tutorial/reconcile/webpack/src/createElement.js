@@ -1,8 +1,10 @@
+'use strict';
+
 function createElement(type, props, ...children) {
     props = Object.assign({}, props);
     props.children = [].concat(...children)
         // 筛选
-        .filter(child => child != null && child !== false)
+        .filter(child => child !== null && child !== false)
         // 遍历操作 如果是对象则筛选掉(这里会筛选JSX对象和组件对象)，留下来文本节点进行处理
         .map(child => child instanceof Object ? child : createTextElement(child));
     return {

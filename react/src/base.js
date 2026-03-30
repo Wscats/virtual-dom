@@ -1,10 +1,12 @@
+'use strict';
+
 const TEXT_ELEMENT = 'TEXT_ELEMENT';
 
 function createElement(type, props, ...children) {
     props = Object.assign({}, props);
     props.children = [].concat(...children)
         // 筛选
-        .filter(child => child != null && child !== false)
+        .filter(child => child !== null && child !== false)
         // 遍历操作
         .map(child => child instanceof Object ? child : createTextElement(child));
     return {
@@ -21,7 +23,7 @@ function createTextElement(value) {
 
 function updateDomProperties(dom, prevProps, nextProps) {
     const isEvent = name => name.startsWith("on");
-    const isAttribute = name => !isEvent(name) && name != "children";
+    const isAttribute = name => !isEvent(name) && name !== "children";
     console.log(isEvent,isAttribute)
     // Remove event listeners
     Object.keys(prevProps).filter(isEvent).forEach(name => {

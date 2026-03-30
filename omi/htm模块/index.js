@@ -1,5 +1,7 @@
-var htm = require('htm');
-var fs = require('fs');
+'use strict';
+
+const htm = require('htm');
+const fs = require('fs');
 function h(type, props, ...children) {
     return {
         type,

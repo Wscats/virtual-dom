@@ -1,3 +1,5 @@
+'use strict';
+
 
 
 /* 🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼 */
@@ -7,7 +9,7 @@ function importFromBelow() {
   
   function updateDomProperties(dom, prevProps, nextProps) {
     const isEvent = name => name.startsWith("on");
-    const isAttribute = name => !isEvent(name) && name != "children";
+    const isAttribute = name => !isEvent(name) && name !== "children";
 
     // Remove event listeners
     Object.keys(prevProps).filter(isEvent).forEach(name => {
@@ -153,7 +155,7 @@ function importFromBelow() {
   function createElement(type, props, ...children) {
     props = Object.assign({}, props);
     props.children = [].concat(...children)
-      .filter(child => child != null && child !== false)
+      .filter(child => child !== null && child !== false)
       .map(child => child instanceof Object ? child : createTextElement(child));
     return {type, props};
   }

@@ -1,3 +1,5 @@
+'use strict';
+
 function createElement(type, props, ...childrens) {
     return {
         // 父标签类型，比如dev，ul等

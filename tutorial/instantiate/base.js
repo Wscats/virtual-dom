@@ -1,3 +1,5 @@
+'use strict';
+
 function instantiate(element) {
     const {
         type,

@@ -1,3 +1,5 @@
+'use strict';
+
 let React = require("./base.js")
 console.log(React)
 class App extends React.Component {

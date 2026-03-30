@@ -1,3 +1,5 @@
+'use strict';
+
 let {
     updateDomProperties
 } = require('./updateDomProperties.js');

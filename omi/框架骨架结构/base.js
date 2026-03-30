@@ -2,7 +2,7 @@
     'use strict';
 
     function h(nodeName, attributes) {}
-    var WeElement = function (_HTMLElement) {
+    const WeElement = function (_HTMLElement) {
         function WeElement() {}
         WeElement.prototype.beforeInstall = function() {};
         WeElement.prototype.install = function() {};
@@ -21,12 +21,12 @@
     }(HTMLElement);
     function define(name, ctor) {}
     function render(vnode, parent, store) {}
-    var options = {
+    const options = {
         store: null,
         root: function () {
             // nodejs里面有global全局变量，判断是否是node环境
             // 此时self===window
-            if ('object' != typeof global || !global || global.Math !== Math || global.Array !== Array) return self || window || global || function () {
+            if ('object' !== typeof global || !global || global.Math !== Math || global.Array !== Array) return self || window || global || function () {
                 return this;
             }();
             else return global;
@@ -35,10 +35,10 @@
 
 
     // Component和WeElement是等价的都是可以创建组件
-    var Component = WeElement;
+    const Component = WeElement;
     // defineElement和define是等价的都是可以注册组件
-    var defineElement = define;
-    var omi = {
+    const defineElement = define;
+    let omi = {
         // 创建组件的父类，相当于React.Component()
         WeElement: WeElement,
         Component: Component,
@@ -56,6 +56,6 @@
     options.root.omi = omi;
     options.root.Omi.version = '5.0.21';
     // 如果是在模块化中，判断module是否存在，否则在全局的this(window)里面导出Omi全局变量
-    if ('undefined' != typeof module) module.exports = omi;
+    if ('undefined' !== typeof module) module.exports = omi;
     else self.Omi = omi;
 }();

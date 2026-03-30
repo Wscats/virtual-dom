@@ -1,3 +1,5 @@
+'use strict';
+
 // 利用Reflect来读对象
 let target = {
     _test: 1,
@@ -77,15 +79,15 @@ console.log(object1.sum);
 
 // Reflect.construct()方法的行为有点像 new操作符构造函数 ， 相当于运行 new target(...args)
 // 所以下面两句是等价的
-// var obj = new Foo(...args);
-// var obj = Reflect.construct(Foo, args);
+// let obj = new Foo(...args);
+// const obj = Reflect.construct(Foo, args);
 
 // Reflect.construct(target, argumentsList[, newTarget])
 // target被运行的目标函数argumentsList调用构造函数的数组或者伪数组newTarget可选该参数为构造函数， 参考new.target操作符，如果没有newTarget参数， 默认和target一样
-var Fn = function() {
+const Fn = function() {
     this.attr = [1];
 };
-var Person = function() {
+const Person = function() {
 };
 Person.prototype.run = function() {
 };
@@ -94,10 +96,10 @@ console.log("----实例化构造函数并继承，三个参数(相当于new)----
 console.log(Reflect.construct(Fn, [], Person)); //这种写法就不需要在Person里面写Fn.call(this)了
 
 
-var Fn1 = function() {
+const Fn1 = function() {
     this.attr = [1];
 };
-var Person1 = function() {
+const Person1 = function() {
     Fn1.call(this)
 };
 Person1.prototype.run = function() {

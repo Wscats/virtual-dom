@@ -1,9 +1,11 @@
+'use strict';
+
 function updateDomProperties(dom, prevProps, nextProps) {
     // 定义事件过滤器筛选函数，以on为特征去监听
     // startsWith方法判断是否on字符串作为开头
     const isEvent = name => name.startsWith("on");
     // 定义属性值筛选函数，筛选掉事件属性值和children属性值
-    const isAttribute = name => !isEvent(name) && name != "children";
+    const isAttribute = name => !isEvent(name) && name !== "children";
     // 卸载事件绑定
     Object.keys(prevProps).filter(isEvent).forEach(name => {
         // 将字符串转化成小写，然后剪裁掉前面两个字母

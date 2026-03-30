@@ -1,3 +1,5 @@
+'use strict';
+
 function reconcile(parentDom, instance, element) {
     if (instance === null) {
         const newInstance = instantiate(element);

@@ -1,9 +1,11 @@
+'use strict';
+
 !(function () {
-  var n = function (t, e, s, u) {
+  const n = function (t, e, s, u) {
       var r;
       e[0] = 0;
-      for (var h = 1; h < e.length; h++) {
-        var p = e[h++],
+      for (let h = 1; h < e.length; h++) {
+        let p = e[h++],
           a = e[h] ? ((e[0] |= p ? 1 : 2), s[e[h++]]) : e[++h];
         3 === p
           ? (u[0] = a)
@@ -23,7 +25,7 @@
     },
     t = new Map(),
     e = function (e) {
-      var s = t.get(this);
+      let s = t.get(this);
       return (
         s || ((s = new Map()), t.set(this, s)),
         (s = n(
@@ -60,7 +62,7 @@
                   a++
                 ) {
                   a && (1 === s && p(), p(a));
-                  for (var o = 0; o < n[a].length; o++)
+                  for (let o = 0; o < n[a].length; o++)
                     (t = n[a][o]),
                       1 === s
                         ? "<" === t
@@ -106,5 +108,5 @@
           : s[0]
       );
     };
-  "undefined" != typeof module ? (module.exports = e) : (self.htm = e);
+  "undefined" !== typeof module ? (module.exports = e) : (self.htm = e);
 })();
