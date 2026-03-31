@@ -1,6 +1,6 @@
 import Watcher from './watcher';
 
-// 指令解析器
+/** Directive parser: compiles virtual DOM elements with reactive bindings. */
 export default class Compile {
   constructor(vm) {
     this._vm = vm;
@@ -13,7 +13,7 @@ export default class Compile {
 
   _getElement(target, tagName) {
     return (attrs = {}, ...childrens) => {
-      // 创建节点
+      // Create DOM element
       this._elem = document.createElement(tagName);
       this._attrs = attrs;
       this._childrens = childrens;
@@ -24,7 +24,7 @@ export default class Compile {
     };
   }
 
-  // 绑定属性
+  /** Bind attributes and directives to the element. */
   _bindAttrs() {
     const {
       _attrs,
@@ -41,7 +41,7 @@ export default class Compile {
     });
   }
 
-  // 添加子节点
+  /** Append child elements (text nodes or DOM elements). */
   _addChildrens() {
     const {
       _childrens,
@@ -66,7 +66,7 @@ export default class Compile {
     });
   }
 
-  // 绑定指令
+  /** Process directive bindings (e.g. :model, :html). */
   _bindDirectives(attr, _elem) {
     const {
       _attrs,
@@ -79,9 +79,8 @@ export default class Compile {
   }
 }
 
-// 绑定watcher
-const compileUtil = {
-  bind(node, vm, exp, type) {
+/** Compile utilities: bind watchers to DOM nodes. */
+const compileUtil = {  bind(node, vm, exp, type) {
     const update = updater[type];
     update && update(node, this.getVal(vm, exp));
 
@@ -98,7 +97,7 @@ const compileUtil = {
   model(node, vm, exp) {
     this.bind(node, vm, exp, 'model');
     node.addEventListener('input', e => {
-      let value = e.target.value;
+      const value = e.target.value;
       this.setVal(vm, exp, value);
     });
   },

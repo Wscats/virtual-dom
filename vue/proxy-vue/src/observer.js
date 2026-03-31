@@ -2,14 +2,15 @@ import Dep from './dep';
 import {isObject} from './utils';
 
 /**
- * [Observer description] 监听器,监听对象的属性,触发后通知订阅
- * @param {[type]}   obj [description] 需要被监听的对象
+ * Observer: watches object properties via Proxy, notifies subscribers on change.
+ * @param {Object} obj - Object to observe
+ * @returns {Proxy} Proxied reactive object
  */
 const Observer = obj => {
   const dep = new Dep();
   return new Proxy(obj, {
     get: function(target, key, receiver) {
-      // 如果订阅者存在，直接添加订阅
+      // Subscribe current watcher if one is being evaluated
       if (Dep.target) {
         dep.addSub(key, Dep.target);
       }
@@ -27,15 +28,16 @@ const Observer = obj => {
 };
 
 /**
- * 将对象转为监听对象
- * @param {*} obj 要监听的对象
+ * Convert an object into a deeply reactive (observed) object.
+ * @param {*} obj - Object to make reactive
+ * @returns {Proxy|*} Reactive proxy or original value for primitives
  */
 export default function observify(obj) {
   if (!isObject(obj)) {
     return obj;
   }
 
-  // 深度监听
+  // Deep observe nested objects
   Object.keys(obj).forEach(key => {
     obj[key] = observify(obj[key]);
   });

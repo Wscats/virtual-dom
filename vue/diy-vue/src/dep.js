@@ -1,24 +1,24 @@
 /**
- * [subs description] 订阅器,储存订阅者
- * @type {Map}
+ * Dependency collector: stores subscribers (watchers) per reactive key.
  */
 export default class Dep {
   constructor() {
-    // 我们用 hash 储存订阅者
+    // Use Map to store subscribers per key
     this.subs = new Map();
   }
-  // 添加订阅者
+
+  /** Add a subscriber (watcher) for the given key. */
   addSub(key, sub) {
-    // 取出键为 key 的订阅者
     const currentSub = this.subs.get(key);
     if (currentSub) {
       currentSub.add(sub);
     } else {
-      // 用 Set 数据结构储存,保证唯一值
+      // Use Set to ensure unique subscribers
       this.subs.set(key, new Set([sub]));
     }
   }
-  // 通知
+
+  /** Notify all subscribers of the given key. */
   notify(key) {
     if (this.subs.get(key)) {
       this.subs.get(key).forEach(sub => {

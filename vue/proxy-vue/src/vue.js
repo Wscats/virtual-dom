@@ -13,18 +13,18 @@ export default class Vue {
     this._appendDom();
     return this._vm;
   }
-  // 深度监听 data 对象
+  /** Deep observe the data object. */
   _initData(data) {
     this._data = observify(data());
   }
-  // 将_vm与data绑定，对this进行代理
+  /** Bind _vm to data via Proxy for reactive access. */
   _initVM() {
     const {_config} = this;
     this._vm = new Proxy(this, {
       get: (target, key, receiver) => {
         if (Object.keys(this).includes(key)) return this[key];
         if (Object.keys(this._data).includes(key)) return this._data[key];
-        // 如果是获取computed中的计算属性，那就要重新计算，获取data中数据，将dom订阅，关联了computed和dom
+        // Computed property: re-evaluate to subscribe DOM watchers
         return _config.computed[key].call(target._vm);
       },
       set: (target, key, value, receiver) => {
@@ -36,7 +36,7 @@ export default class Vue {
     });
   }
 
-  // 初始化Computed,并缓存
+  /** Initialize and cache computed properties. */
   _initComputed() {
     const {_config, _vm} = this;
     this._computed = {};
@@ -45,7 +45,7 @@ export default class Vue {
     });
   }
 
-  // 重新
+  /** Compile template and mount to DOM. */
   _appendDom() {
     const {render, el} = this._config;
     const targetElem = document.querySelector(el);
@@ -54,11 +54,10 @@ export default class Vue {
     targetElem.appendChild(render(createElement));
   }
 
-  // 将函数绑定到this._vm上
+  /** Bind all config functions to the VM context. */
   _bindVM() {
     const {_config} = this;
     Object.keys(_config).forEach(i => {
-      const val = _config[i];
       if (typeof _config[i] === 'function') {
         _config[i] = _config[i].bind(this._vm);
       }

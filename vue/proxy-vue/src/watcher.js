@@ -1,7 +1,7 @@
 import Dep from './dep';
 import pushQueue from './batcher';
 
-// 订阅者
+/** Subscriber: watches a reactive expression and triggers callback on change. */
 export default class Watcher {
   constructor(vm, exp, cb) {
     this.vm = vm;
